@@ -11,13 +11,10 @@
 namespace Juzaweb\Ecommerce;
 
 use Juzaweb\CMS\Abstracts\Action;
-use Juzaweb\Ecommerce\Http\Controllers\Backend\InventoryController;
-use Juzaweb\Ecommerce\Http\Controllers\Backend\PaymentMethodController;
-use Juzaweb\Ecommerce\Http\Controllers\Backend\SettingController;
+use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\Ecommerce\Http\Controllers\Frontend\CartController;
 use Juzaweb\Ecommerce\Http\Controllers\Frontend\CheckoutController;
 use Juzaweb\Ecommerce\Models\ProductVariant;
-use Juzaweb\Backend\Facades\HookAction;
 
 class EcommerceAction extends Action
 {
