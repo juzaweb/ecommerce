@@ -10,7 +10,7 @@ function addToCart(variantId, quantity) {
             _token: $('meta[name="csrf-token"]').attr('content'),
         }
     }).responseText;
-    
+
     return JSON.parse(res);
 }
 
@@ -24,7 +24,7 @@ function removeItemCart(variantId) {
             variant_id: variantId
         }
     }).responseText;
-    
+
     return JSON.parse(res);
 }
 
@@ -36,6 +36,6 @@ function removeCart() {
         async: false,
         data: {}
     }).responseText;
-    
+
     return JSON.parse(res);
 }

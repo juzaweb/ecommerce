@@ -417,7 +417,7 @@ window.Juzaweb || (window.Juzaweb = {});
 
                 this.abandonedCheckout();
             } else {
-                var initWard = $("select[name='ShippingWardId'] >option").length > 0 ? false : true;
+                var initWard = $("select[name='ShippingWardId'] >option").length <= 0;
                 if (initWard) {
                     if (this.show_ward) {
                         this.showShippingWard(designThemeId);
@@ -585,8 +585,6 @@ window.Juzaweb || (window.Juzaweb = {});
         StoreCheckout.prototype.paymentCheckout = function (googleApiKey) {
             $(".btn-checkout").button('loading');
             var that = this;
-            that.setBillingLatLng(false);
-            that.setShippingLatLng(false);
             that.returnCheckout();
         };
 
@@ -746,26 +744,6 @@ window.Juzaweb || (window.Juzaweb = {});
             }
         };
 
-        StoreCheckout.prototype.setShippingLatLng = function (result) {
-            if (result == false) {
-                this.shippingLatLng.Lat = "";
-                this.shippingLatLng.Lng = "";
-            }
-            else {
-                this.shippingLatLng.Lat = result.geometry.location.lat();
-                this.shippingLatLng.Lng = result.geometry.location.lng();
-            }
-        };
-
-        function cleanupClientDetails() {
-            $("#BillingAddressLat").remove();
-            $("#BillingAddressLong").remove();
-            $("#ShippingAddressLat").remove();
-            $("#ShippingAddressLong").remove();
-            $("#BrowserWidth").remove();
-            $("#BrowserHeight").remove();
-        }
-
         function handleCustomPaymentMessage(content) {
             $("#qr-error-modal .invalid_order").hide();
             $("#qr-error-modal .custom_error_message").html(content)
@@ -780,187 +758,57 @@ window.Juzaweb || (window.Juzaweb = {});
             var that = this;
             var $form = $("form.formCheckout");
 
-            var browserWidth = $(window).width();
-            var browserHeight = $(window).height();
-            $form.append('<input type="hidden" type="text" class="form-control" id="BillingAddressLat" name="BillingAddress.Latitude" value="' + that.billingLatLng.Lat + '" />');
-            $form.append('<input type="hidden" type="text" class="form-control" id="BillingAddressLong" name="BillingAddress.Longitude" value="' + that.billingLatLng.Lng + '" />');
-            $form.append('<input type="hidden" type="text" class="form-control" id="ShippingAddressLat" name="ShippingAddress.Latitude" value="' + that.shippingLatLng.Lat + '" />');
-            $form.append('<input type="hidden" type="text" class="form-control" id="ShippingAddressLong" name="ShippingAddress.Longitude" value="' + that.shippingLatLng.Lng + '" />');
-            $form.append('<input type="hidden" type="text" class="form-control" id="BrowserWidth" name="BrowserWidth" value="' + browserWidth + '" />');
-            $form.append('<input type="hidden" type="text" class="form-control" id="BrowserHeight" name="BrowserHeight" value="' + browserHeight + '" />');
-
-            var prvdId = parseInt($(".payment-methods .input-radio:checked").attr("data-check-id"));
-            if (prvdId == 2) {
-                if (!$("#onepay_visa_confirm").is(":checked")) {
-                    alert("Bạn chưa đồng ý với các điều khoản và dịch vụ của Onepay!");
-                    cleanupClientDetails();
-                    $(".btn-checkout").button('reset');
-                    return false;
-                }
-            } else if (prvdId == 1) {
-                if (!$("#onepay_atm_confirm").is(":checked")) {
-                    alert("Bạn chưa đồng ý với các điều khoản và dịch vụ của Onepay!");
-                    cleanupClientDetails();
-                    $(".btn-checkout").button('reset');
-                    return false;
-                }
-            } else if (prvdId == 11) {
-                $form.validator('validate');
-                if ($(".help-block.with-errors > ul").length <= 0) {
-                    var url = window.location.href;
-                    var method = "POST";
-                    NProgress.start();
-                    $.ajax({
-                        url: url,
-                        type: method,
-                        global: false,
-                        data: $form.serialize(),
-                        success: function (data) {
-                            if (data.error == "0") {
-                                $(".invalid_order span").text("1đ");
-                                $(".trigger-qr-error-modal").trigger("click");
-                            } else if (data.error == "fail") {
-                                window.location.href = "/checkout/failure/" + data.order_id;
-                            } else {
-                                $("#moca-modal iframe").attr("src", data.moca_iframe_url);
-                                $(".trigger-moca-modal").trigger("click");
-                            }
-                            NProgress.done();
-                        },
-                        complete: function () {
-                            cleanupClientDetails();
-                            $(".btn-checkout").button('reset');
-                        }
-                    });
-                } else {
-                    $(".btn-checkout").button('reset');
-                }
-
-                cleanupClientDetails();
-
-                return false;
-            } else if (prvdId == 17) {
-                $form.validator('validate');
-                if ($(".help-block.with-errors > ul").length <= 0) {
-                    var caller = this;
-                    NProgress.start();
-                    $.ajax({
-                        url: window.location.href,
-                        type: "POST",
-                        global: false,
-                        data: $form.serialize(),
-                        success: function (data) {
-                            if (data.error) {
-                                if (!!data.error_message) {
-                                    switch (data.error_code) {
-                                        case 2:
-                                            handleCustomPaymentMessage("Hạn mức thanh toán tối đa là 20,000,000đ <br/ > Vui lòng chọn hình thức thanh toán khác");
-                                            break;
-                                        case 3:
-                                            $(".invalid_order span").text("1000đ");
-                                            $(".trigger-qr-error-modal").trigger("click");
-                                            break;
-                                        case 4:
-                                            handleCustomPaymentMessage("Phương thức thanh toán chỉ hỗ trợ VND <br/ > Vui lòng chọn hình thức thanh toán khác");
-                                            break;
-                                        default:
-                                            $("#qr-error-modal .invalid_order").hide();
-                                            $("#qr-error-modal .custom_error_message").text(data.error_message);
-                                            $('#qr-error-modal').one('hidden.bs.modal', function () {
-                                                window.location.href = "/checkout/failure/" + data.order_id;
-                                            });
-                                            $(".trigger-qr-error-modal").trigger("click");
-                                            break;
-                                    }
-                                } else {
-                                    window.location.href = "/checkout/failure/" + data.order_id;
-                                }
-                            } else {
-                                var paymentStatusChecker = Twine.context(document.body).paymentStatus;
-                                paymentStatusChecker.remaining = 300;
-                                paymentStatusChecker.zaloData = data;
-
-                                var parser = new UAParser();
-                                parser.setUA(window.navigator.userAgent);
-                                var device_type = parser.getDevice().type;
-                                switch (device_type) {
-                                    case undefined:
-                                    case 'pc':
-                                    case 'smarttv':
-                                    case 'tv':
-                                        if (data.qr == null || data.qr == "") {
-                                            window.location.href = (data.success == true) ? data.url_redirect : "/";
-                                        } else {
-                                            $("#zalopay_modal .qr-wrapper>img").attr("src", "data:image/png;base64," + data.qr);
-                                            $('#zalopay_modal').one('hidden.bs.modal', function () {
-                                                paymentStatusChecker.stopPaymentTimer();
-                                                paymentStatusChecker.stopPollingPaymentStatus();
-                                                window.location.href = "/checkout/cancelled/" + data.order_id;
-                                            }).one('shown.bs.modal', function () {
-                                                paymentStatusChecker.startPaymentTimer();
-                                                paymentStatusChecker.startPollingPaymentStatus();
-                                            });
-                                            $(".trigger-zalopay-modal").trigger("click");
-                                        }
-                                        break;
-                                    case 'mobile':
-                                    case 'phone':
-                                    case 'tablet':
-                                        var zaloPayAppUrl = paymentStatusChecker.zaloData.app_url + "/openapp/pay.html?appid=" + encodeURIComponent(paymentStatusChecker.zaloData.app_id) + "&zptranstoken=" + encodeURIComponent(paymentStatusChecker.zaloData.zp_trans_token);
-                                        window.location.href = zaloPayAppUrl;
-                                        break;
-                                    default:
-                                        console.log('unknown');
-                                        //ignore for now
-                                        break;
-                                }
-                            }
-                        },
-                        complete: function () {
-                            $(".btn-checkout").button('reset');
-                            NProgress.done();
-                        }
-                    });
-                } else {
-                    $(".btn-checkout").button('reset');
-                }
-                cleanupClientDetails();
-
-                return false;
-            }
-
             $form.validator('validate');
             if ($(".help-block.with-errors > ul").length <= 0) {
                 let url = $form.attr('action');
                 let method = "POST";
-                
+
                 $.ajax({
                     url: url,
                     type: method,
                     global: true,
-                    data: $form.serialize(),
-                    success: function (data) {
-                        if (data.status == true) {
-                            window.location.href = data.data.redirect;
-                        } else {
-                            if (data.errors != null && data.errors.length > 0) {
-                                let html = "";
-                                for (i = 0; i < data.errors.length; i++) {
-                                    html += "<li>" + data.errors[i] + "</li>";
-                                }
+                    data: $form.serialize()
+                }).done(function(response) {
+
+                    if (response.status == true) {
+                        window.location.href = response.data.redirect;
+                    } else {
+                        let errorHtml = "";
+                        if (response.errors != null && response.errors.length > 0) {
+                            for (i = 0; i < response.errors.length; i++) {
+                                errorHtml += "<li>" + response.errors[i] + "</li>";
                             }
-                            
-                            $(".sidebar__content .has-error .help-block > ul").html(html);
-                            $(".btn-checkout").button('reset');
-                            return false;
+                        } else {
+                            errorHtml += "<li>" + response.message + "</li>";
                         }
+
+                        $(".sidebar__content .has-error .help-block > ul").html(errorHtml);
+
+                        $(".btn-checkout").button('reset');
                     }
+
+                    return false;
+                }).fail(function(data) {
+                    let response = data.responseJSON;
+                    let errorHtml = "";
+
+                    if (response.errors != null && response.errors.length > 0) {
+                        for (i = 0; i < response.errors.length; i++) {
+                            errorHtml += "<li>" + response.errors[i] + "</li>";
+                        }
+                    } else {
+                        errorHtml += "<li>" + response.message + "</li>";
+                    }
+
+                    $(".sidebar__content .has-error .help-block > ul").html(errorHtml);
+
+                    $(".btn-checkout").button('reset');
+
+                    return false;
                 });
             } else {
                 $(".btn-checkout").button('reset');
             }
-
-            cleanupClientDetails();
         };
 
         StoreCheckout.prototype.abandonedCheckout = function () {

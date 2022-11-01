@@ -10,127 +10,157 @@
 
 namespace Juzaweb\Ecommerce\Http\Controllers\Frontend;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Juzaweb\Backend\Events\RegisterSuccessful;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Http\Controllers\FrontendController;
 use Juzaweb\CMS\Models\User;
+use Juzaweb\Ecommerce\Contracts\CartManagerContract;
+use Juzaweb\Ecommerce\Contracts\OrderManagerContract;
 use Juzaweb\Ecommerce\Events\OrderSuccess;
+use Juzaweb\Ecommerce\Events\PaymentSuccess;
 use Juzaweb\Ecommerce\Http\Requests\CheckoutRequest;
-use Juzaweb\Ecommerce\Supports\CartInterface;
-use Juzaweb\Ecommerce\Supports\OrderInterface;
-use Illuminate\Support\Facades\DB;
-use Juzaweb\Ecommerce\Supports\Payment;
+use Juzaweb\Ecommerce\Models\Order;
 
 class CheckoutController extends FrontendController
 {
-    public function checkout(
-        CartInterface $cart,
-        OrderInterface $order,
-        CheckoutRequest $request
+    protected CartManagerContract $cartManager;
+
+    protected OrderManagerContract $orderManager;
+
+    public function __construct(
+        CartManagerContract $cartManager,
+        OrderManagerContract $orderManager
     ) {
-        global $jw_user;
-        
-        $items = $cart->getCurrentCart()->items;
-        
-        if (empty($items)) {
+        $this->cartManager = $cartManager;
+        $this->orderManager = $orderManager;
+    }
+
+    public function checkout(CheckoutRequest $request): JsonResponse|RedirectResponse
+    {
+        $cart = $this->cartManager->find();
+
+        if ($cart->isEmpty()) {
             return $this->error(
                 [
                     'message' => __('Cart is empty.'),
                 ]
             );
         }
-    
+
         DB::beginTransaction();
         try {
-            if (empty($jw_user)) {
-                $password = Hash::make(Str::random());
-    
-                $jw_user = User::create(
-                    [
-                        'name' => $request->get('name'),
-                        'email' => $request->get('email'),
-                        'password' => $password,
-                    ]
-                );
-                
-                event(new RegisterSuccessful($jw_user));
-            }
-            
-            $newOrder = $order->createByCart($cart, $jw_user, $request->all());
+            $user = $this->getOrderUser($request);
+
+            $newOrder = $this->orderManager->createByCart(
+                $cart,
+                $request->all(),
+                $user
+            );
+
+            $cart->remove();
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             report($e);
             return $this->error($e->getMessage());
         }
-        
-        event(new OrderSuccess($newOrder, $jw_user));
-        
-        $paymentMethod = $newOrder->paymentMethod;
-        
+
+        event(new OrderSuccess($newOrder, $user));
+
         try {
-            $payment = Payment::make($paymentMethod);
-    
-            $response = $payment->purchase(
+            $purchase = $newOrder->purchase();
+
+            $redirect = $purchase->isRedirect() ?
+                $purchase->getRedirectURL() :
+                    $this->getThanksPageURL($newOrder->getOrder());
+
+            return $this->success(
                 [
-                    'amount' => $newOrder->total,
-                    'currency' => get_config('ecom_currency', 'USD'),
-                    'cancelUrl' => route('ajax', ['payment/cancel']),
-                    'returnUrl' => route('ajax', ['payment/completed']),
+                    'redirect' => $redirect,
+                    'message' => trans('ecom::content.order_thanks'),
                 ]
             );
         } catch (\Exception $e) {
             report($e);
-            return $this->error($e->getMessage());
+
+            return $this->error(
+                [
+                    'redirect' => $this->getThanksPageURL($newOrder->getOrder()),
+                    'message' => 'Cannot get payment url.',
+                ]
+            );
         }
-    
-        if ($response->isRedirect()) {
-            $redirect = $response->redirectUrl();
-        } else {
-            $redirect = $this->getThanksPageRedirect();
+    }
+
+    public function cancel(Request $request): RedirectResponse
+    {
+        $order = Order::findByCode($request->input('order'));
+
+        return redirect()->to($this->getThanksPageURL($order));
+    }
+
+    public function completed(Request $request): RedirectResponse
+    {
+        $helper = $this->orderManager->find($request->input('order'));
+
+        $order = $helper->getOrder();
+
+        if ($helper?->completed($request->all())) {
+            event(new PaymentSuccess($order));
         }
-        
-        return $this->success(
+
+        return redirect()->to($this->getThanksPageURL($order));
+    }
+
+    protected function getOrderUser(Request $request): User
+    {
+        global $jw_user;
+
+        if ($jw_user) {
+            return $jw_user;
+        }
+
+        $email = $request->input('email');
+        if ($user = User::whereEmail($email)->first()) {
+            return $user;
+        }
+
+        $password = Hash::make(Str::random());
+        $user = new User();
+        $user->fill(
             [
-                'redirect' => $redirect,
-                'message' => $response->getMessage(),
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
             ]
         );
+
+        $user->setAttribute('password', $password);
+        $user->save();
+
+        event(new RegisterSuccessful($user));
+
+        return $user;
     }
-    
-    public function cancel(Request $request)
+
+    protected function getThanksPageURL(Order $order): string
     {
-        return redirect()->to($this->getThanksPageRedirect());
-    }
-    
-    public function completed(Request $request)
-    {
-        $paypal = new PayPal;
-    
-        $response = $paypal->complete(
-            [
-                'amount' => $paypal->formatAmount($order->amount),
-                'transactionId' => $order->id,
-                'currency' => 'USD',
-                'cancelUrl' => $paypal->getCancelUrl($order),
-                'returnUrl' => $paypal->getReturnUrl($order),
-                'notifyUrl' => $paypal->getNotifyUrl($order),
-            ]
-        );
-    
-        if ($response->isSuccessful()) {
-            $order->update(['transaction_id' => $response->getTransactionReference()]);
+        if (!$thanksPage = get_config('ecom_thanks_page')) {
+            return '/';
         }
-        
-        return redirect()->to($this->getThanksPageRedirect());
-    }
-    
-    protected function getThanksPageRedirect()
-    {
-        $thanksPage = Post::find(get_config('ecom_thanks_page'));
-        return $thanksPage->slug ?? '/';
+
+        $thanksPage = get_page_url($thanksPage);
+
+        if (empty($thanksPage)) {
+            return '/';
+        }
+
+        return "{$thanksPage}/{$order->token}";
     }
 }

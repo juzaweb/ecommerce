@@ -11,14 +11,17 @@
 namespace Juzaweb\Ecommerce\Supports;
 
 use Illuminate\Support\Collection;
-use Juzaweb\CMS\Models\User;
 use Juzaweb\Ecommerce\Models\Order;
 
 interface OrderInterface
 {
-    public function createByCart(CartInterface $cart, User $user, array $data) : Order;
-    
-    public function createByItems(array $data, array $items, User $user): Order;
-    
-    public function getCollectionItems(array $items): Collection;
+    public function purchase(): PaymentMethodInterface;
+
+    public function completed(?array $input): bool;
+
+    public function getItems(): Collection;
+
+    public function getOrder(): Order;
+
+    public function getPaymentRedirectURL(): string;
 }

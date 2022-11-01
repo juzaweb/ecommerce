@@ -5,7 +5,7 @@
         @component('cms::components.tabs', [
             'tabs' => [
                 'general' => trans('cms::app.general'),
-                'shop' => trans('cms::app.shop'),
+                'shop' => trans('ecom::content.shop'),
             ]
         ])
             @slot('tab_general')
@@ -17,6 +17,6 @@
             @endslot
         @endcomponent
 
-        <button type="submit" class="btn btn-success">Save Changes</button>
+        <button type="submit" class="btn btn-success">{{__('Save Changes')}}</button>
     </form>
 @endsection

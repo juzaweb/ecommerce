@@ -8,8 +8,8 @@
     <title>{{ title }} - {{ trans('ecom::content.payment_order') }}</title>
     <link rel="shortcut icon" href="{{ upload_url(config('icon')) }}" type="image/x-icon" />
 
-    <link rel="stylesheet" href="{{ asset('jw-styles/plugins/ecommerce/assets/css/checkout.min.css') }}">
-    
+    <link rel="stylesheet" href="{{ asset('jw-styles/plugins/juzaweb/ecommerce/assets/css/checkout.min.css') }}">
+
     <script> var Juzaweb = Juzaweb || {}; Juzaweb.store = ''; Juzaweb.theme = {"id":606449,"role":"main","name":"{{ shop_name }}"}; Juzaweb.template = ''; </script>
 
     <script type="text/javascript">if (typeof Juzaweb == 'undefined') { Juzaweb = {}; }
@@ -62,7 +62,7 @@
 
     {{ csrf_field() }}
 
-    <div class="wrap" context="checkout" define='{checkout: new Juzaweb.StoreCheckout(this,{ token: "{{ cart.token }}", email: "{{ user.email }}", totalOrderItemPrice: {{ cart.total_price|default(0) }}, shippingFee: 0, freeShipping: false, requiresShipping: {{ requires_shipping ? 'true' : 'false' }}, existCode: false, code: "", discount: 0, settingLanguage: "vi", moneyFormat: "₫", discountLabel: "{{ trans('ecom::content.free') }}", districtPolicy: "optional", wardPolicy: "hidden", district: "", ward: "", province:"", otherAddress: false, shippingId: 0, shippingMethods: {}, customerAddressId: 0, reductionCode: "" })}'>
+    <div class="wrap" context="checkout" define='{checkout: new Juzaweb.StoreCheckout(this,{ token: "{{ cart.token }}", email: "{{ user.email }}", totalOrderItemPrice: "{{ cart.total_price|default('$0') }}", shippingFee: 0, freeShipping: false, requiresShipping: {{ requires_shipping ? 'true' : 'false' }}, existCode: false, code: "", discount: 0, settingLanguage: "vi", moneyFormat: "", discountLabel: "{{ trans('ecom::content.free') }}", districtPolicy: "optional", wardPolicy: "hidden", district: "", ward: "", province:"", otherAddress: false, shippingId: 0, shippingMethods: {}, customerAddressId: 0, reductionCode: "" })}'>
         <div class='sidebar '>
             <div class="sidebar_header">
                 <h2>
@@ -76,31 +76,27 @@
                         <div class="summary-product-list">
                             <table class="product-table">
                                 <tbody>
+                                    {% for item in cart.items %}
+                                        <tr class="product product-has-image clearfix">
+                                            <td>
+                                                <div class="product-thumbnail">
+                                                    <div class="product-thumbnail__wrapper">
+                                                        <img src="{{ item.thumbnail }}" class="product-thumbnail__image" alt="" />
+                                                    </div>
+                                                    <span class="product-thumbnail__quantity" aria-hidden="true">{{ item.quantity }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="product-info">
+                                                <span class="product-info-name">
+                                                    {{ item.title }}
+                                                </span>
+                                            </td>
 
-                            {% set cart = ecom_get_cart() %}
-
-                            {% for item in cart.items %}
-                                <tr class="product product-has-image clearfix">
-                                    <td>
-                                        <div class="product-thumbnail">
-                                            <div class="product-thumbnail__wrapper">
-                                                <img src="{{ item.thumbnail }}" class="product-thumbnail__image" alt="" />
-                                            </div>
-                                            <span class="product-thumbnail__quantity" aria-hidden="true">{{ item.quantity }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="product-info">
-                                        <span class="product-info-name">
-                                            {{ item.title }}
-                                        </span>
-                                    </td>
-
-                                    <td class="product-price text-right">
-                                        {{ item.line_price }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-
+                                            <td class="product-price text-right">
+                                                {{ item.line_price }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                             <div class="order-summary__scroll-indicator">
@@ -152,7 +148,7 @@
                             </span>
 
                             <span bind="totalOrderItemPrice" class="total-line-subprice pull-right">
-                                {{ cart.total_line_item_price }}
+                                {{ cart.total_line_price }}
                             </span>
                         </div>
 
@@ -245,7 +241,7 @@
                                                     <span class="field__label" bind-event-click="handleClick(this)">
                                                         {{ trans('ecom::content.full_name') }}
                                                     </span>
-                                                <input name="BillingAddress_LastName" type="text" bind-event-change="saveAbandoned()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_last_name" data-error="{{ trans('ecom::content.please_enter_full_name') }}" required bind="billing_address.full_name" autocomplete="off" value="{{ user.name }}" {% if auth %} disabled {% endif %} />
+                                                <input name="name" type="text" bind-event-change="saveAbandoned()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_last_name" data-error="{{ trans('ecom::content.please_enter_full_name') }}" required bind="billing_address.full_name" autocomplete="off" value="{{ user.name }}" {% if auth %} disabled {% endif %} />
                                             </div>
                                             <div class="help-block with-errors"></div>
                                         </div>
@@ -255,7 +251,7 @@
                                                 <span class="field__label" bind-event-click="handleClick(this)">
                                                     {{ trans('ecom::content.phone') }}
                                                 </span>
-                                                <input name="BillingAddress_Phone" bind-event-change="saveAbandoned()" type="tel" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_phone" data-error="{{ trans('ecom::content.please_enter_full_phone') }}" pattern="^([0-9,\+,\-,\(,\),\.]{8,20})$" bind="billing_address.phone" value="{{ user.phone }}" {% if auth %} disabled {% endif %} />
+                                                <input name="phone" bind-event-change="saveAbandoned()" type="tel" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_phone" data-error="{{ trans('ecom::content.please_enter_full_phone') }}" pattern="^([0-9,\+,\-,\(,\),\.]{8,20})$" bind="billing_address.phone" value="{{ user.phone }}" {% if auth %} disabled {% endif %} />
                                             </div>
                                             <div class="help-block with-errors"></div>
                                         </div>
@@ -279,7 +275,7 @@
 												<span class="field__label" bind-event-click="handleClick(this)" >
 													{{ trans('ecom::content.note') }}
 												</span>
-                                            <textarea name="note"
+                                            <textarea name="notes"
                                                       bind-event-change="saveAbandoned()"
                                                       bind-event-focus="handleFocus(this)"
                                                       bind-event-blur="handleFieldBlur(this)"
@@ -394,7 +390,7 @@
 </div>
 <script>var code_langs = {'choose_province': '{{ trans('ecom::content.choose_province') }}'};</script>
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
-<script src="{{ asset('jw-styles/plugins/ecommerce/assets/js/checkout.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('jw-styles/plugins/juzaweb/ecommerce/assets/js/checkout.min.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(document).ajaxStart(function () {

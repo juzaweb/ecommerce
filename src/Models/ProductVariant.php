@@ -10,9 +10,10 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\Backend\Models\Post;
-use Juzaweb\Ecommerce\Models\Attribute;
 
 /**
  * Juzaweb\Ecommerce\Models\Variant
@@ -43,8 +44,6 @@ use Juzaweb\Ecommerce\Models\Attribute;
  * @property string|null $description
  * @property array|null $names
  * @property string|null $sale_price
- * @property int $quantity
- * @property int $stock
  * @property string $type
  * @property int $post_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -66,6 +65,7 @@ use Juzaweb\Ecommerce\Models\Attribute;
 class ProductVariant extends Model
 {
     protected $table = 'product_variants';
+
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
     public $casts = [
@@ -73,19 +73,28 @@ class ProductVariant extends Model
         'names' => 'array',
     ];
 
-    public static function findByProduct($productId)
+    public static function findByProduct($productId): \Illuminate\Database\Eloquent\Model|ProductVariant|null
     {
         return self::where('post_id', '=', $productId)
             ->first();
     }
 
-    public function product()
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Post::class, 'post_id', 'id');
     }
 
-    public function attributes()
+    public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'variants_attributes', 'variant_id', 'attribute_id');
+    }
+
+    public function getThumbnail(): ?string
+    {
+        if ($this->thumbnail) {
+            return $this->thumbnail;
+        }
+
+        return $this->product->thumbnail;
     }
 }

@@ -2,11 +2,6 @@
     "name": "juzaweb/ecommerce",
     "description": "Ecommerce plugin for website designed by Juzaweb",
     "extra": {
-        "laravel": {
-            "providers": [
-                "Juzaweb\\Ecommerce\\Providers\\AutoloadSeviceProvider"
-            ]
-        },
         "juzaweb": {
             "providers": [
                 "Juzaweb\\Ecommerce\\Providers\\EcommerceServiceProvider"
@@ -14,8 +9,7 @@
             "name": "Ecommerces",
             "domain": "ecom",
             "cms_min": "3.0",
-            "version": "1.0",
-            "visible": true
+            "version": "1.0"
         }
     },
     "require": {

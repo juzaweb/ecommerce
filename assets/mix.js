@@ -1,6 +1,6 @@
 const mix = require('laravel-mix');
 
-const baseAsset = 'plugins/ecommerce/src/resources/assets';
+const baseAsset = 'plugins/ecommerce/assets';
 const basePublish = baseAsset + '/public';
 
 mix.styles(
@@ -32,4 +32,21 @@ mix.combine(
             baseAsset + '/js/frontend-support.js',
     ],
     `${basePublish}/js/frontend-support.min.js`
+);
+
+mix.styles(
+    [
+        baseAsset + '/css/bootstrap.min.css',
+        baseAsset + '/css/thankyou.css',
+    ],
+    `${basePublish}/css/thankyou.min.css`
+);
+
+mix.combine(
+    [
+        baseAsset + '/js/bootstrap.min.js',
+        baseAsset + '/js/twine.min.js',
+        baseAsset + '/js/thankyou.js',
+    ],
+    `${basePublish}/js/thankyou.min.js`
 );

@@ -12,47 +12,94 @@ namespace Juzaweb\Ecommerce\Supports;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
+use Juzaweb\Ecommerce\Contracts\CartContract;
 use Juzaweb\Ecommerce\Models\Cart;
 use Juzaweb\Ecommerce\Models\ProductVariant;
 use Illuminate\Support\Facades\Cookie;
+use Juzaweb\Ecommerce\Repositories\CartRepository;
 
-class DbCart implements CartInterface
+class DBCart implements CartContract
 {
-    public function addOrUpdate(int $variantId, int $quantity) : Cart
+    protected CartRepository $cartRepository;
+
+    protected Cart $cart;
+
+    protected float $totalPrice;
+
+    public function __construct(
+        CartRepository $cartRepository
+    ) {
+        $this->cartRepository = $cartRepository;
+    }
+
+    public function make(string|Cart $cart): static
     {
-        $cart = $this->getCurrentCart();
-        $variant = ProductVariant::find($variantId);
-        if (empty($variant)) {
-            return $cart;
+        global $jw_user;
+
+        if ($cart instanceof Cart) {
+            $this->cart = $cart;
+        } else {
+            $this->cart = $this->cartRepository->firstOrNew(['code' => $cart]);
         }
-        
-        $items = $cart->items;
-        $items[$variantId] = [
-            'variant_id' => $variantId,
+
+        if ($jw_user) {
+            $this->cart->user_id = $jw_user->id;
+        }
+
+        return $this;
+    }
+
+    public function add(int|ProductVariant $variant, int $quantity): bool
+    {
+        return $this->addOrUpdate($variant, $quantity);
+    }
+
+    public function update(int|ProductVariant $variant, int $quantity): bool
+    {
+        return $this->addOrUpdate($variant, $quantity);
+    }
+
+    public function addOrUpdate(int|ProductVariant $variant, int $quantity) : bool
+    {
+        $variant = is_numeric($variant) ? ProductVariant::find($variant) : $variant;
+
+        if (empty($variant)) {
+            throw new \Exception(
+                __(
+                    'Product Variant ID :variant not found.',
+                    ['variant' => $variant]
+                )
+            );
+        }
+
+        $items = $this->cart->items;
+
+        $items[$variant->id] = [
+            'variant_id' => $variant->id,
             'quantity' => $quantity,
         ];
-        
-        $cart->items = $items;
-        $cart->save();
-        return $cart;
+
+        $this->cart->items = $items;
+
+        $this->cart->save();
+
+        return true;
     }
-    
-    public function bulkUpdate(array $items) : Cart
+
+    public function bulkUpdate(array $items) : bool
     {
-        $cart = $this->getCurrentCart();
         $variantIds = collect($items)->pluck('variant_id')->toArray();
         $variants = ProductVariant::whereIn('id', $variantIds)
             ->get()
             ->keyBy('id');
-    
-        $items = $cart->items;
+
+        $items = $this->cart->items;
         foreach ($items as $item) {
             $variant = $variants->get($item['variant_id']);
             if (empty($variant)) {
                 continue;
             }
-    
+
             $items[$variant->id] = Arr::only(
                 $item,
                 [
@@ -61,63 +108,97 @@ class DbCart implements CartInterface
                 ]
             );
         }
-    
-        $cart->items = $items;
-        $cart->save();
-        return $cart;
-    }
-    
-    public function removeItem(int $variantId) : Cart
-    {
-        $cart = $this->getCurrentCart();
-        unset($cart->items[$variantId]);
-        $cart->save();
-        return $cart;
-    }
-    
-    public function remove(): bool
-    {
-        $cart = $this->getCurrentCart();
-        Cookie::queue(Cookie::forget('jw_cart'));
-        $cart->delete();
+
+        $this->cart->items = $items;
+        $this->cart->save();
         return true;
     }
-    
-    public function getCurrentCart() : Cart
+
+    public function removeItem(int $variantId) : bool
     {
-        global $jw_user;
-        
-        $cartCode = Cookie::get('jw_cart');
-        $cart = Cart::firstOrNew(['code' => $cartCode]);
-        if (empty($cart->code)) {
-            $cart->code = Str::uuid()->toString();
-        }
-        
-        if ($jw_user) {
-            $cart->user_id = $jw_user->id;
-        }
-        
-        return $cart;
+        unset($this->cart->items[$variantId]);
+        $this->cart->save();
+        return true;
     }
-    
-    public function getCartItems() : Collection
+
+    public function remove(): bool
     {
-        $cart = $this->getCurrentCart();
-        $variantIds = collect($cart->items)
+        Cookie::queue(Cookie::forget('jw_cart'));
+        $this->cart->delete();
+        return true;
+    }
+
+    public function getItems() : array
+    {
+        return $this->cart->items ?? [];
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->getItems());
+    }
+
+    public function isNotEmpty(): bool
+    {
+        return !$this->isEmpty();
+    }
+
+    public function getCollectionItems(): Collection
+    {
+        $variantIds = collect($this->cart->items)
             ->pluck('variant_id')
             ->toArray();
-        
+
         $variants = ProductVariant::with(['product'])
             ->whereIn('id', $variantIds)
             ->get()
             ->map(
-                function ($item) use ($cart) {
-                    $item->quantity = $cart->items[$item->id]['quantity'];
+                function ($item) {
+                    $item->quantity = $this->cart->items[$item->id]['quantity'];
                     $item->line_price = $item->price * $item->quantity;
                     return $item;
                 }
             );
-        
+
+        if (empty($variants)) {
+            throw new \Exception('Product items is empty.');
+        }
+
+        $this->totalPrice = $variants->sum('price');
+
         return $variants;
+    }
+
+    public function getCode(): string
+    {
+        return $this->cart->code;
+    }
+
+    public function totalPrice(): float
+    {
+        if (isset($this->totalPrice)) {
+            return $this->totalPrice;
+        }
+
+        $this->getCollectionItems();
+
+        return $this->totalPrice;
+    }
+
+    public function totalItems() : int
+    {
+        if ($this->cart->items) {
+            return count($this->cart->items);
+        }
+
+        return 0;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'code' => $this->getCode(),
+            'items' => $this->getItems(),
+        ];
     }
 }

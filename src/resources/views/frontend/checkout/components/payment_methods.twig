@@ -1,6 +1,4 @@
-{% set paymentMethods = ecom_get_payment_methods() %}
-
-{% for index,paymentMethod in paymentMethods %}
+{% for index,paymentMethod in payment_methods %}
     <div class="content-box">
 
         <div class="content-box__row">
@@ -12,11 +10,11 @@
                 <label class="radio__label" for="payment_method_{{ paymentMethod.id }}">
                     <span class="radio__label__primary">{{ paymentMethod.name }}</span>
                     <span class="radio__label__accessory">
-                    <ul>
-                        <li class="payment-icon-v2 payment-icon--4">
-                            <i class="fa fa-money payment-icon-fa" aria-hidden="true"></i>
-                        </li>
-                    </ul>
+                        <ul>
+                            <li class="payment-icon-v2 payment-icon--4">
+                                <i class="fa fa-money payment-icon-fa" aria-hidden="true"></i>
+                            </li>
+                        </ul>
                     </span>
                 </label>
             </div>

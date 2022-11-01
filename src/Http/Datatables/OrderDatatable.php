@@ -19,10 +19,12 @@ class OrderDatatable extends DataTable
         return [
             'code' => [
                 'label' => trans('ecom::content.code'),
+                'width' => '15%',
             ],
             'name' => [
                 'label' => trans('ecom::content.name'),
                 'formatter' => [$this, 'rowActionsFormatter'],
+                'width' => '20%',
             ],
             'phone' => [
                 'label' => trans('ecom::content.phone'),
@@ -52,21 +54,26 @@ class OrderDatatable extends DataTable
      */
     public function query($data)
     {
-        $query = Order::select([
-            'code',
-            'name',
-            'email',
-            'phone',
-            'total',
-            'created_at',
-        ]);
+        $query = Order::select(
+            [
+                'id',
+                'code',
+                'name',
+                'email',
+                'phone',
+                'total',
+                'created_at',
+            ]
+        );
 
         if ($keyword = Arr::get($data, 'keyword')) {
-            $query->where(function (Builder $q) use ($keyword) {
-                $q->where('name', JW_SQL_LIKE, '%'. $keyword .'%');
-                $q->orWhere('email', JW_SQL_LIKE, '%'. $keyword .'%');
-                $q->orWhere('phone', JW_SQL_LIKE, '%'. $keyword .'%');
-            });
+            $query->where(
+                function (Builder $q) use ($keyword) {
+                    $q->where('name', JW_SQL_LIKE, '%'. $keyword .'%');
+                    $q->orWhere('email', JW_SQL_LIKE, '%'. $keyword .'%');
+                    $q->orWhere('phone', JW_SQL_LIKE, '%'. $keyword .'%');
+                }
+            );
         }
 
         return $query;

@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Models\User;
 
@@ -46,13 +47,13 @@ class Cart extends Model
     protected $casts = [
         'items' => 'array'
     ];
-    
+
     protected $fillable = [
         'code',
         'items'
     ];
-    
-    public function user()
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }

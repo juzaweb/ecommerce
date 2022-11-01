@@ -10,27 +10,39 @@
 
 namespace Juzaweb\Ecommerce\Http\Controllers\Frontend;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Juzaweb\CMS\Http\Controllers\FrontendController;
+use Juzaweb\Ecommerce\Contracts\CartContract;
+use Juzaweb\Ecommerce\Contracts\CartManagerContract;
 use Juzaweb\Ecommerce\Http\Requests\AddToCartRequest;
 use Juzaweb\Ecommerce\Http\Requests\BulkUpdateCartRequest;
 use Juzaweb\Ecommerce\Http\Requests\RemoveItemCartRequest;
-use Juzaweb\Ecommerce\Models\Cart;
-use Juzaweb\Ecommerce\Supports\CartInterface;
 
 class CartController extends FrontendController
 {
-    public function addToCart(AddToCartRequest $request, CartInterface $cart)
+    protected CartManagerContract $cartManager;
+
+    public function __construct(CartManagerContract $cartManager)
+    {
+        $this->cartManager = $cartManager;
+    }
+
+    public function addToCart(AddToCartRequest $request): HttpResponse|JsonResponse|RedirectResponse
     {
         $variantId = $request->input('variant_id');
         $quantity = $request->input('quantity');
-    
+
+        $cart = $this->cartManager->find();
+
         DB::beginTransaction();
         try {
-            $cart = $cart->addOrUpdate($variantId, $quantity);
+            $cart->addOrUpdate($variantId, $quantity);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -41,20 +53,22 @@ class CartController extends FrontendController
                 ]
             );
         }
-        
+
         return $this->responseCartWithCookie(
             $cart,
             'Add to cart successfully.'
         );
     }
-    
-    public function removeItem(RemoveItemCartRequest $request, CartInterface $cart)
+
+    public function removeItem(RemoveItemCartRequest $request)
     {
         $variantId = $request->input('variant_id');
-        
+
+        $cart = $this->cartManager->find();
+
         DB::beginTransaction();
         try {
-            $cart = $cart->removeItem($variantId);
+            $cart->removeItem($variantId);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -65,19 +79,19 @@ class CartController extends FrontendController
                 ]
             );
         }
-    
+
         return $this->responseCartWithCookie(
             $cart,
             'Remove item cart successfully.'
         );
     }
-    
+
     public function bulkUpdate(
         BulkUpdateCartRequest $request,
-        CartInterface $cart
-    ) {
+        CartContract $cart
+    ): HttpResponse|JsonResponse|RedirectResponse {
         $items = (array) $request->input('items');
-        
+
         DB::beginTransaction();
         try {
             $cart = $cart->bulkUpdate($items);
@@ -91,12 +105,17 @@ class CartController extends FrontendController
                 ]
             );
         }
-    
-        return $this->responseCartWithCookie($cart, 'Add to cart successfully.');
+
+        return $this->responseCartWithCookie(
+            $cart,
+            'Add to cart successfully.'
+        );
     }
-    
-    public function remove(CartInterface $cart)
+
+    public function remove()
     {
+        $cart = $this->cartManager->find();
+
         DB::beginTransaction();
         try {
             $cart->remove();
@@ -110,7 +129,7 @@ class CartController extends FrontendController
                 ]
             );
         }
-        
+
         return $this->success(
             [
                 'message' => __('Add to cart successfully.'),
@@ -118,11 +137,12 @@ class CartController extends FrontendController
             ]
         );
     }
-    
-    public function getCartItems(CartInterface $cart)
+
+    public function getCartItems(): JsonResponse
     {
-        $model = $cart->getCurrentCart();
-        $items = $cart->getCartItems()
+        $cart = $this->cartManager->find();
+
+        $items = $cart->getCollectionItems()
             ->map(
                 function ($item) {
                     return Arr::only(
@@ -143,33 +163,24 @@ class CartController extends FrontendController
                     );
                 }
             );
-        
+
         return response()->json(
             [
-                'code' => $model->code,
+                'code' => $cart->getCode(),
                 'items' => $items
             ]
         );
     }
-    
-    protected function responseCartWithCookie(Cart $cart, string $message)
+
+    protected function responseCartWithCookie(CartContract $cart, string $message): JsonResponse|RedirectResponse
     {
-        $cookie = Cookie::make('jw_cart', $cart->code, 43200);
-    
-        return Response::make()
-            ->withCookie($cookie)
-            ->setContent(
-                response()
-                    ->json(
-                        [
-                            'status' => true,
-                            'data' => [
-                                'cart' => $cart,
-                                'message' => __($message),
-                            ],
-                        ]
-                    )
-                    ->getContent()
-            );
+        $cookie = Cookie::make('jw_cart', $cart->getCode(), 43200);
+
+        return $this->success(
+            [
+                'cart' => $cart->toArray(),
+                'message' => __($message),
+            ]
+        )->withCookie($cookie);
     }
 }

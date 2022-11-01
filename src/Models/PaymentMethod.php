@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
 
@@ -46,14 +47,18 @@ class PaymentMethod extends Model
     const STATUS_INACTIVE = 1;
 
     protected $table = 'payment_methods';
-    protected $fieldName = 'name';
-    protected $guarded = ['id', 'created_at', 'updated_at'];
+    protected string $fieldName = 'name';
+    protected $guarded = [
+        'id',
+        'created_at',
+        'updated_at'
+    ];
 
     protected $casts = [
         'data' => 'array'
     ];
 
-    public function order()
+    public function orders(): HasMany
     {
         return $this->hasMany(
             Order::class,

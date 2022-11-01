@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\CMS\Models\Model;
 
 /**
@@ -35,7 +36,7 @@ class Attribute extends Model
     protected $table = 'attributes';
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    public function values()
+    public function values(): HasMany
     {
         return $this->hasMany(AttributeValue::class, 'attribute_id', 'id');
     }

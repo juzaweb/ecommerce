@@ -24,6 +24,7 @@ class PaymentMethodCollectionResource extends ResourceCollection
                         'id',
                         'type',
                         'name',
+                        'description',
                     ]
                 );
             }

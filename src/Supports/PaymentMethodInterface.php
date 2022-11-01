@@ -12,11 +12,15 @@ namespace Juzaweb\Ecommerce\Supports;
 
 interface PaymentMethodInterface
 {
+    public function purchase(array $params): PaymentMethodInterface;
+
+    public function completed(array $params): PaymentMethodInterface;
+
+    public function isSuccessful(): bool;
+
     public function isRedirect(): bool;
-    
-    public function redirectUrl(): string;
-    
-    public function purchase(array $data): PaymentMethodInterface;
-    
+
+    public function getRedirectURL(): null|string;
+
     public function getMessage(): string;
 }

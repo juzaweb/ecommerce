@@ -10,8 +10,11 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Models\User;
+use Juzaweb\CMS\Traits\ResourceModel;
 
 /**
  * Juzaweb\Ecommerce\Models\Order
@@ -71,21 +74,73 @@ use Juzaweb\CMS\Models\User;
  */
 class Order extends Model
 {
-    protected $table = 'orders';
-    protected $guarded = ['id', 'created_at', 'updated_at'];
+    use ResourceModel;
 
-    public function orderItems()
+    protected $table = 'orders';
+
+    protected $fillable = [
+        'code',
+        'token',
+        'name',
+        'phone',
+        'email',
+        'address',
+        'country_code',
+        'quantity',
+        'total_price',
+        'total',
+        'discount',
+        'discount_codes',
+        'discount_target_type',
+        'payment_method_id',
+        'payment_method_name',
+        'notes',
+        'other_address',
+        'payment_status',
+        'delivery_status',
+        'user_id',
+    ];
+
+    protected string $fieldName = 'name';
+
+    protected $appends = [
+        'payment_status_text'
+    ];
+
+    const PAYMENT_STATUS_PENDING = 'pending';
+
+    const PAYMENT_STATUS_COMPLETED = 'completed';
+
+    public static function findByCode(string $code, array $columns = ['*']): null|static
+    {
+        return Order::whereCode($code)->first($columns);
+    }
+
+    public static function findByToken(string $token, array $columns = ['*']): null|static
+    {
+        return Order::whereToken($token)->first($columns);
+    }
+
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
-    public function paymentMethod()
+    public function paymentMethod(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function getPaymentStatusTextAttribute(): string
+    {
+        return match ($this->payment_status) {
+            self::PAYMENT_STATUS_COMPLETED => trans('ecom::content.completed'),
+            default => trans('ecom::content.pending'),
+        };
     }
 }

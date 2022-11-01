@@ -11,18 +11,26 @@
 namespace Juzaweb\Ecommerce\Supports;
 
 use Juzaweb\Ecommerce\Models\PaymentMethod;
-use Juzaweb\Ecommerce\Supports\Paymemts\Paypal;
+use Juzaweb\Ecommerce\Supports\Payments\Paypal;
 use Juzaweb\Ecommerce\Supports\Payments\Cod;
 
 class Payment
 {
-    public static function make(PaymentMethod $paymentMethod) : PaymentMethodInterface
+    public function make(PaymentMethod $paymentMethod): PaymentMethodInterface
     {
-        switch ($paymentMethod->type) {
-            case 'paypal':
-                return new Paypal($paymentMethod);
-        }
-        
-        return new Cod($paymentMethod);
+        return match ($paymentMethod->type) {
+            'paypal' => new Paypal($paymentMethod),
+            default => new Cod($paymentMethod),
+        };
+    }
+
+    public function purchase(PaymentMethod $paymentMethod, array $params = []): PaymentMethodInterface
+    {
+        return $this->make($paymentMethod)->purchase($params);
+    }
+
+    public function completed(PaymentMethod $paymentMethod, array $params): PaymentMethodInterface
+    {
+        return $this->make($paymentMethod)->completed($params);
     }
 }

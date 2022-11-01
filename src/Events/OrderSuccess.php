@@ -12,15 +12,21 @@ namespace Juzaweb\Ecommerce\Events;
 
 use Juzaweb\CMS\Models\User;
 use Juzaweb\Ecommerce\Models\Order;
+use Juzaweb\Ecommerce\Supports\OrderInterface;
 
 class OrderSuccess
 {
-    public $order;
-    public $user;
-    
-    public function __construct(Order $order, User $user)
+    public Order $order;
+    public User $user;
+
+    public function __construct(Order|OrderInterface $order, User $user)
     {
-        $this->order = $order;
+        if ($order instanceof OrderInterface) {
+            $this->order = $order->getOrder();
+        } else {
+            $this->order = $order;
+        }
+
         $this->user = $user;
     }
 }

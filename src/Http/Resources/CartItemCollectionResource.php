@@ -14,24 +14,23 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class CartItemCollectionResource extends ResourceCollection
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return $this->collection->map(
             function ($item) {
                 return [
                     'sku_code' => $item->sku_code,
                     'barcode' => $item->barcode,
-                    'title' => $item->title,
-                    'thumbnail' => upload_url($item->thumbnail),
-                    'description' => $item->description,
+                    'title' => $item->product->title,
+                    'thumbnail' => upload_url($item->product->thumbnail),
+                    'description' => $item->product->description,
                     'names' => $item->names,
-                    'images' => $item->images,
-                    'price' => $item->price,
-                    'compare_price' => $item->compare_price,
+                    'price' => ecom_price_with_unit($item->price),
+                    'compare_price' => ecom_price_with_unit($item->compare_price),
                     'stock' => $item->stock,
                     'type' => $item->type,
-                    'line_price' => $item->line_price,
-                    'quantity' => $item->quantity,
+                    'line_price' => ecom_price_with_unit($item->line_price),
+                    'quantity' => (int) $item->quantity,
                 ];
             }
         )->toArray();

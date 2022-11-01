@@ -10,8 +10,8 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\CMS\Models\Model;
-use Juzaweb\Ecommerce\Models\Attribute;
 
 /**
  * Juzaweb\Ecommerce\Models\AttributeValue
@@ -30,14 +30,13 @@ use Juzaweb\Ecommerce\Models\Attribute;
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue whereAttributeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue whereId($value)
  */
-
 class AttributeValue extends Model
 {
     protected $table = 'attribute_values';
     protected $guarded = ['id'];
     public $timestamps = false;
 
-    public function attribute()
+    public function attribute(): BelongsTo
     {
         return $this->belongsTo(Attribute::class, 'attribute_id', 'id');
     }

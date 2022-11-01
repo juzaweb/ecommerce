@@ -22,9 +22,13 @@
                         )
                     ]) }}
 
-                    {{ Field::text($model, 'name', [
-                        'required' => true,
-                    ]) }}
+                    {{
+                        Field::text($model, 'name', [
+                            'required' => true,
+                        ])
+                    }}
+
+                    {{ Field::textarea($model, 'description') }}
                 @endcomponent
 
                 @component('cms::components.card', [

@@ -15,13 +15,13 @@ use Juzaweb\Ecommerce\Supports\PaymentMethodInterface;
 
 class Cod extends PaymentMethodAbstract implements PaymentMethodInterface
 {
-    public function isRedirect(): bool
-    {
-        return false;
-    }
-    
     public function purchase(array $data): PaymentMethodInterface
     {
         return $this;
+    }
+
+    public function isRedirect(): bool
+    {
+        return false;
     }
 }
