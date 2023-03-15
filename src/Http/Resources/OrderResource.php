@@ -29,7 +29,8 @@ class OrderResource extends JsonResource
             'total' => ecom_price_with_unit($this->total),
             'notes' => $this->notes,
             'other_address' => $this->other_address,
-            'payment_status' => $this->payment_status_text,
+            'payment_status' => $this->payment_status,
+            'payment_status_text' => $this->payment_status_text,
             'delivery_status' => $this->delivery_status,
             'quantity' => $this->quantity,
             'customer' => [

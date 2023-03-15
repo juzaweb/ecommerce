@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Juzaweb\Backend\Events\RegisterSuccessful;
 use Juzaweb\Backend\Models\Post;
+use Juzaweb\CMS\Events\EmailHook;
 use Juzaweb\CMS\Http\Controllers\FrontendController;
 use Juzaweb\CMS\Models\User;
 use Juzaweb\Ecommerce\Contracts\CartManagerContract;
@@ -41,6 +42,9 @@ class CheckoutController extends FrontendController
         $this->orderManager = $orderManager;
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function checkout(CheckoutRequest $request): JsonResponse|RedirectResponse
     {
         $cart = $this->cartManager->find();
@@ -68,11 +72,29 @@ class CheckoutController extends FrontendController
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            report($e);
-            return $this->error($e->getMessage());
+            throw $e;
         }
 
         event(new OrderSuccess($newOrder, $user));
+
+        $params = apply_filters(
+            'ecom_checkout_success_email_params',
+            [
+                'name' => $user->name,
+                'email' => $user->email,
+                'order_code' => $newOrder->getOrder()->code,
+            ],
+            $user,
+            $newOrder->getOrder()
+        );
+
+        event(new EmailHook(
+            'checkout_success',
+            [
+                'to' => $user->email,
+                'params' => $params,
+            ]
+        ));
 
         try {
             $purchase = $newOrder->purchase();
@@ -113,6 +135,25 @@ class CheckoutController extends FrontendController
         $order = $helper->getOrder();
 
         if ($helper?->completed($request->all())) {
+            $params = apply_filters(
+                'ecom_payment_success_email_params',
+                [
+                    'name' => $helper->getOrder()?->user->name,
+                    'email' => $helper->getOrder()?->user->email,
+                    'order_code' => $helper->getOrder()->code,
+                ],
+                $helper->getOrder()?->user,
+                $helper->getOrder()
+            );
+
+            event(new EmailHook(
+                'payment_success',
+                [
+                    'to' => $helper->getOrder()->user->email,
+                    'params' => $params,
+                ]
+            ));
+
             event(new PaymentSuccess($order));
         }
 

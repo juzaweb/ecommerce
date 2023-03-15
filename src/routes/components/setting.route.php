@@ -16,25 +16,9 @@ use Juzaweb\Ecommerce\Http\Controllers\Backend\VariantController;
 Route::get('ecommerce/settings', [SettingController::class, 'index'])->name('admin.ecommerce.setting');
 
 Route::jwResource(
-    'ecommerce/variants',
-    VariantController::class,
-    [
-        'name' => 'variants'
-    ]
-);
-
-Route::jwResource(
     'ecommerce/payment-methods',
     PaymentMethodController::class,
     [
         'name' => 'payment_methods'
-    ]
-);
-
-Route::jwResource(
-    'ecommerce/inventories',
-    InventoryController::class,
-    [
-        'name' => 'inventories'
     ]
 );

@@ -14,7 +14,7 @@ class OrderDatatable extends DataTable
      *
      * @return array
      */
-    public function columns()
+    public function columns(): array
     {
         return [
             'code' => [

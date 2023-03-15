@@ -16,7 +16,7 @@ function addToCart(variantId, quantity) {
 
 function removeItemCart(variantId) {
     let res = $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url: jwdata.base_url + '/ajax/cart/remove-item',
         dataType: 'json',
         async: false,

@@ -37,6 +37,7 @@ use Juzaweb\CMS\Traits\ResourceModel;
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentMethod whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentMethod whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentMethod whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder active()
  * @mixin \Eloquent
  */
 class PaymentMethod extends Model

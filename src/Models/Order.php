@@ -70,6 +70,7 @@ use Juzaweb\CMS\Traits\ResourceModel;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotalPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereToken($value)
  * @mixin \Eloquent
  */
 class Order extends Model
@@ -104,11 +105,10 @@ class Order extends Model
     protected string $fieldName = 'name';
 
     protected $appends = [
-        'payment_status_text'
+        'payment_status_text',
     ];
 
     const PAYMENT_STATUS_PENDING = 'pending';
-
     const PAYMENT_STATUS_COMPLETED = 'completed';
 
     public static function findByCode(string $code, array $columns = ['*']): null|static

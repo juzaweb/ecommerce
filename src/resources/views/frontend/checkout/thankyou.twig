@@ -8,11 +8,13 @@
     <meta name="description" content="{{ shopName }} - {{ trans('ecom::content.thank_you') }}" />
     <title>{{ shopName }} - {{ trans('ecom::content.thank_you') }}</title>
     <link rel="shortcut icon" href="{{ upload_url(config('icon')) }}" type="image/x-icon" />
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="{{ plugin_asset('css/thankyou.min.css', 'juzaweb/ecommerce') }}" rel="stylesheet" type="text/css" />
     <style>
         #map {width: 100%;height: 245px;} .hidden-map{display:none;}
     </style>
+
+    {{ do_action('ecom.thankyou_page.btns.head', order) }}
 </head>
 <body class="body--custom-background-color ">
     <div context="checkout" define="{checkout: new Juzaweb.StoreCheckout(this,{})}" class="container">
@@ -212,7 +214,7 @@
                                             </h2>
                                         </div>
                                         <div class="summary-section no-border no-padding-top">
-                                            <span>{{ order.payment_method.name }} ({{ order.payment_status }})</span>
+                                            <span>{{ order.payment_method.name }} ({{ order.payment_status_text }})</span>
                                             {% if (order.payment_method.description) %}
                                                 <p><b>{{ trans('ecom::content.payment_instruction') }}</b></p>
                                                 <p>{{ order.payment_method.description }}</p>
@@ -237,7 +239,9 @@
                                 {% endif %}
                             </div>
                         </div>
+
                         <div class="order-success unprint">
+                            {{ do_action('ecom.thankyou_page.btns.left', order) }}
                             <a href="/" class="btn btn-primary">
                                 {{ trans('ecom::content.continue_shopping') }}
                             </a>
@@ -247,6 +251,7 @@
                                     {{ trans('ecom::content.print') }}
                                 </div>
                             </a>
+                            {{ do_action('ecom.thankyou_page.btns.right') }}
                         </div>
                     </div>
                 </div>
@@ -338,5 +343,7 @@
             return Checkout;
         }();
     </script>
+
+    {{ do_action('ecom.thankyou_page.btns.footer', order) }}
 </body>
 </html>

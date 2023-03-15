@@ -89,4 +89,5 @@ return [
     'continue_shopping' => 'Continue shopping',
     'shipping_method' => 'Shipping method',
     'payment_instruction' => 'Payment instruction',
+    'store_address' => 'Store address',
 ];

@@ -19,6 +19,7 @@ class CartItemCollectionResource extends ResourceCollection
         return $this->collection->map(
             function ($item) {
                 return [
+                    'id' => $item->id,
                     'sku_code' => $item->sku_code,
                     'barcode' => $item->barcode,
                     'title' => $item->product->title,
@@ -29,6 +30,7 @@ class CartItemCollectionResource extends ResourceCollection
                     'compare_price' => ecom_price_with_unit($item->compare_price),
                     'stock' => $item->stock,
                     'type' => $item->type,
+                    'url' => $item->product->getLink(),
                     'line_price' => ecom_price_with_unit($item->line_price),
                     'quantity' => (int) $item->quantity,
                 ];
