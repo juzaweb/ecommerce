@@ -4,14 +4,16 @@
             <div class="col-md-6">
                 {{ Field::text(trans('ecom::content.price'), 'meta[price]', [
                     'value' => $variant->price ? number_format($variant->price) : '',
-                    'class' => 'is-number number-format'
+                    'class' => 'is-number number-format',
+                    'prefix' => '$'
                 ]) }}
             </div>
 
             <div class="col-md-6">
                 {{ Field::text(trans('ecom::content.compare_price'), 'meta[compare_price]', [
                     'value' => $variant->compare_price ? number_format($variant->compare_price) : '',
-                    'class' => 'is-number number-format'
+                    'class' => 'is-number number-format',
+                    'prefix' => '$'
                 ]) }}
             </div>
         </div>

@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\Backend\Models\Post;
+use Juzaweb\CMS\Traits\QueryCache\QueryCacheable;
+use Juzaweb\CMS\Traits\ResourceModel;
 
 /**
  * Juzaweb\Ecommerce\Models\Variant
@@ -35,7 +37,6 @@ use Juzaweb\Backend\Models\Post;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereImages($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereSkuCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereTitle($value)
  * @mixin \Eloquent
@@ -64,18 +65,36 @@ use Juzaweb\Backend\Models\Post;
  */
 class ProductVariant extends Model
 {
+    use ResourceModel, QueryCacheable;
+
+    public string $cachePrefix = 'product_variants_';
+
     protected $table = 'product_variants';
 
-    protected $guarded = ['id', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'sku_code',
+        'barcode',
+        'title',
+        'thumbnail',
+        'description',
+        'names',
+        'images',
+        'price',
+        'compare_price',
+        'type',
+    ];
 
-    public $casts = [
+    protected $casts = [
         'images' => 'array',
         'names' => 'array',
     ];
 
+    protected string $fieldName = 'title';
+
     public static function findByProduct($productId): \Illuminate\Database\Eloquent\Model|ProductVariant|null
     {
         return self::where('post_id', '=', $productId)
+            ->orderBy('id', 'ASC')
             ->first();
     }
 
@@ -96,5 +115,12 @@ class ProductVariant extends Model
         }
 
         return $this->product->thumbnail;
+    }
+
+    protected function getCacheBaseTags(): array
+    {
+        return [
+            'product_variants',
+        ];
     }
 }

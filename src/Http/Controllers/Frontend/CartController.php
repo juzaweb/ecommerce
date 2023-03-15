@@ -60,7 +60,7 @@ class CartController extends FrontendController
         );
     }
 
-    public function removeItem(RemoveItemCartRequest $request)
+    public function removeItem(RemoveItemCartRequest $request): JsonResponse|RedirectResponse
     {
         $variantId = $request->input('variant_id');
 
@@ -112,7 +112,7 @@ class CartController extends FrontendController
         );
     }
 
-    public function remove()
+    public function remove(): JsonResponse|RedirectResponse
     {
         $cart = $this->cartManager->find();
 

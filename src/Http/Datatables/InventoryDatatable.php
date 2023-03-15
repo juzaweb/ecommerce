@@ -2,7 +2,7 @@
 
 namespace Juzaweb\Ecommerce\Http\Datatables;
 
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\DataTable;
 use Juzaweb\Backend\Models\Post;
@@ -14,7 +14,7 @@ class InventoryDatatable extends DataTable
      *
      * @return array
      */
-    public function columns()
+    public function columns(): array
     {
         return [
             'title' => [
@@ -56,9 +56,11 @@ class InventoryDatatable extends DataTable
         $query->whereMeta('inventory_management', 1);
 
         if ($keyword = Arr::get($data, 'keyword')) {
-            $query->where(function (Builder $q) use ($keyword) {
-                $q->where('title', JW_SQL_LIKE, '%'. $keyword .'%');
-            });
+            $query->where(
+                function (Builder $q) use ($keyword) {
+                    $q->where('title', JW_SQL_LIKE, '%' . $keyword . '%');
+                }
+            );
         }
 
         return $query;

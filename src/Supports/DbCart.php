@@ -80,7 +80,6 @@ class DBCart implements CartContract
         ];
 
         $this->cart->items = $items;
-
         $this->cart->save();
 
         return true;
@@ -116,7 +115,9 @@ class DBCart implements CartContract
 
     public function removeItem(int $variantId) : bool
     {
-        unset($this->cart->items[$variantId]);
+        $items = $this->cart->items;
+        unset($items[$variantId]);
+        $this->cart->items = $items;
         $this->cart->save();
         return true;
     }
@@ -164,7 +165,7 @@ class DBCart implements CartContract
             throw new \Exception('Product items is empty.');
         }
 
-        $this->totalPrice = $variants->sum('price');
+        $this->totalPrice = $variants->sum('line_price');
 
         return $variants;
     }

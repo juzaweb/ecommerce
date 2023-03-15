@@ -8,8 +8,9 @@
  * @license    MIT
  */
 
-namespace Juzaweb\Ecommerce;
+namespace Juzaweb\Ecommerce\Actions;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
@@ -29,11 +30,6 @@ class EcommerceAction extends Action
         $this->addAction(
             Action::INIT_ACTION,
             [$this, 'registerPostTypes']
-        );
-
-        $this->addAction(
-            Action::BACKEND_INIT,
-            [$this, 'addAdminMenu']
         );
 
         $this->addAction(
@@ -66,6 +62,26 @@ class EcommerceAction extends Action
             Action::FRONTEND_CALL_ACTION,
             [$this, 'registerFrontendAjax']
         );
+
+        $this->addAction(
+            'post_type.products.form.left',
+            [$this, 'addFormProduct']
+        );
+
+        $this->addFilter(
+            'post_type.products.parseDataForSave',
+            [$this, 'parseDataForSave']
+        );
+
+        $this->addAction(
+            Action::INIT_ACTION,
+            [$this, 'registerEmailHooks']
+        );
+
+        $this->addFilter(
+            'frontend.post_type.products.detail.data',
+            [$this, 'addVariantsProductDetail']
+        );
     }
 
     public function registerPostTypes()
@@ -80,40 +96,6 @@ class EcommerceAction extends Action
                     'category',
                     'tag'
                 ],
-                'metas' => [
-                    'price' => [
-                        'label' => trans('ecom::content.price'),
-                        'type' => 'text',
-                    ],
-                    'compare_price' => [
-                        'label' => trans('ecom::content.compare_price'),
-                        'type' => 'text',
-                    ],
-                    'sku_code' => [
-                        'label' => trans('ecom::content.sku_code'),
-                        'type' => 'text',
-                    ],
-                    'barcode' => [
-                        'label' => trans('ecom::content.barcode'),
-                        'type' => 'text',
-                    ],
-                    'images' => [
-                        'label' => trans('ecom::content.images'),
-                        'type' => 'images',
-                    ]/*,
-                    'quantity' => [
-                        'type' => 'text',
-                        'visible' => true,
-                    ],
-                    'inventory_management' => [
-                        'type' => 'text',
-                        'visible' => true,
-                    ],
-                    'disable_out_of_stock' => [
-                        'type' => 'text',
-                        'visible' => true,
-                    ]*/
-                ]
             ]
         );
 
@@ -146,71 +128,12 @@ class EcommerceAction extends Action
         );
     }
 
-    public function addAdminMenu()
-    {
-        HookAction::registerAdminPage(
-            'ecommerce',
-            [
-                'title' => trans('ecom::content.ecommerce'),
-                'menu' => [
-                    'icon' => 'fa fa-shopping-cart',
-                    'position' => 50,
-                ]
-            ]
-        );
-
-        HookAction::registerAdminPage(
-            'ecommerce.orders',
-            [
-                'title' => trans('ecom::content.orders'),
-                'menu' => [
-                    'icon' => 'fa fa-shopping-cart',
-                    'position' => 5,
-                    'parent' => 'ecommerce'
-                ]
-            ]
-        );
-
-        HookAction::registerAdminPage(
-            'ecommerce.payment-methods',
-            [
-                'title' => trans('ecom::content.payment_methods'),
-                'menu' => [
-                    'icon' => 'fa fa-credit-card',
-                    'position' => 10,
-                    'parent' => 'ecommerce'
-                ]
-            ]
-        );
-
-        HookAction::registerAdminPage(
-            'ecommerce.inventories',
-            [
-                'title' => trans('ecom::content.inventories'),
-                'menu' => [
-                    'icon' => 'fa fa-indent',
-                    'position' => 15,
-                    'parent' => 'ecommerce'
-                ]
-            ]
-        );
-
-        HookAction::registerAdminPage(
-            'ecommerce.settings',
-            [
-                'title' => trans('ecom::content.setting'),
-                'menu' => [
-                    'icon' => 'fa fa-shopping-cart',
-                    'position' => 50,
-                    'parent' => 'ecommerce'
-                ]
-            ]
-        );
-    }
-
     public function addFormProduct($model)
     {
         $variant = ProductVariant::findByProduct($model->id);
+        if (empty($variant)) {
+            $variant = new ProductVariant();
+        }
 
         echo e(
             view(
@@ -238,7 +161,7 @@ class EcommerceAction extends Action
         $metas['disable_out_of_stock'] = $metas['disable_out_of_stock'] ?? 0;
         if ($metas['quantity']) {
             $metas['quantity'] = (int) $metas['quantity'];
-            $metas['quantity'] = $metas['quantity'] > 0 ? $metas['quantity'] : 0;
+            $metas['quantity'] = max($metas['quantity'], 0);
         }
 
         $data['meta'] = $metas;
@@ -250,16 +173,21 @@ class EcommerceAction extends Action
         if (Arr::has($data, 'meta')) {
             $variant = ProductVariant::findByProduct($model->id);
             $variantData = $data['meta'];
-            $variantData['title'] = 'Default';
-            $variantData['names'] = ['Default'];
-            $variantData['post_id'] = $model->id;
+            $variantData['thumbnail'] = $data['thumbnail'];
+            $variantData['description'] = seo_string(strip_tags($data['content']), 320);
 
-            $productVariant = ProductVariant::updateOrCreate(
-                ['id' => $variant->id ?? 0],
-                $variantData
-            );
+            if ($variant) {
+                $variant->update($variantData);
+            } else {
+                $variantData['title'] = 'Default';
+                $variantData['names'] = ['Default'];
+                $variantData['post_id'] = $model->id;
 
-            $model->setMeta('variants', [$productVariant->toArray()]);
+                $variant = ProductVariant::updateOrCreate(
+                    ['id' => $variant->id ?? 0],
+                    $variantData
+                );
+            }
         }
     }
 
@@ -332,6 +260,13 @@ class EcommerceAction extends Action
         );
 
         HookAction::registerFrontendAjax(
+            'cart.remove-item',
+            [
+                'callback' => [CartController::class, 'removeItem'],
+            ]
+        );
+
+        HookAction::registerFrontendAjax(
             'payment.cancel',
             [
                 'callback' => [CheckoutController::class, 'cancel'],
@@ -344,5 +279,43 @@ class EcommerceAction extends Action
                 'callback' => [CheckoutController::class, 'completed'],
             ]
         );
+    }
+
+    public function registerEmailHooks()
+    {
+        $this->hookAction->registerEmailHook(
+            'checkout_success',
+            [
+                'label' => 'Checkout success',
+                'params' => [
+                    'name' => 'User order name',
+                    'email' => 'User order email',
+                    'order_code' => 'Order code',
+                ],
+            ]
+        );
+
+        $this->hookAction->registerEmailHook(
+            'payment_success',
+            [
+                'label' => 'Payment success',
+                'params' => [
+                    'name' => 'User order name',
+                    'email' => 'User order email',
+                    'order_code' => 'Order code',
+                ],
+            ]
+        );
+    }
+
+    public function addVariantsProductDetail(array $data): array
+    {
+        $data['post']['metas']['variants'] = ProductVariant::cacheFor(
+            config('juzaweb.performance.query_cache.lifetime')
+        )
+            ->wherePostId($data['post']['id'])
+            ->get()
+            ->toArray();
+        return $data;
     }
 }

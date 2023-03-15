@@ -1,4 +1,4 @@
-<h5>Store Address</h5>
+<h5>{{ trans('ecom::content.store_address') }}</h5>
 <em>This is where your business is located. Tax rates and shipping rates will use this address.</em>
 
 <div class="row">

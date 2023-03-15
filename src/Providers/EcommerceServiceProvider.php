@@ -13,14 +13,18 @@ namespace Juzaweb\Ecommerce\Providers;
 use Illuminate\Support\Facades\Route;
 use Juzaweb\CMS\Facades\ActionRegister;
 use Juzaweb\CMS\Support\ServiceProvider;
+use Juzaweb\Ecommerce\Actions\EcommerceAction;
+use Juzaweb\Ecommerce\Actions\MenuAction;
+use Juzaweb\Ecommerce\Actions\ResourceAction;
 use Juzaweb\Ecommerce\Contracts\CartContract;
 use Juzaweb\Ecommerce\Contracts\CartManagerContract;
 use Juzaweb\Ecommerce\Contracts\OrderCreaterContract;
 use Juzaweb\Ecommerce\Contracts\OrderManagerContract;
-use Juzaweb\Ecommerce\EcommerceAction;
 use Juzaweb\Ecommerce\Http\Middleware\EcommerceTheme;
 use Juzaweb\Ecommerce\Repositories\CartRepository;
 use Juzaweb\Ecommerce\Repositories\CartRepositoryEloquent;
+use Juzaweb\Ecommerce\Repositories\VariantRepository;
+use Juzaweb\Ecommerce\Repositories\VariantRepositoryEloquent;
 use Juzaweb\Ecommerce\Supports\Creaters\OrderCreater;
 use Juzaweb\Ecommerce\Supports\Manager\CartManager;
 use Juzaweb\Ecommerce\Supports\Manager\OrderManager;
@@ -29,14 +33,15 @@ use Juzaweb\Ecommerce\Supports\Payment;
 class EcommerceServiceProvider extends ServiceProvider
 {
     public array $bindings = [
-        CartRepository::class => CartRepositoryEloquent::class
+        CartRepository::class => CartRepositoryEloquent::class,
+        VariantRepository::class => VariantRepositoryEloquent::class,
     ];
 
     public function boot()
     {
         Route::pushMiddlewareToGroup('theme', EcommerceTheme::class);
 
-        ActionRegister::register(EcommerceAction::class);
+        ActionRegister::register([EcommerceAction::class, MenuAction::class, ResourceAction::class]);
     }
 
     public function register()
