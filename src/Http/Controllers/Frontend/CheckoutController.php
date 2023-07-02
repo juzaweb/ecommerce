@@ -88,13 +88,15 @@ class CheckoutController extends FrontendController
             $newOrder->getOrder()
         );
 
-        event(new EmailHook(
-            'checkout_success',
-            [
-                'to' => $user->email,
-                'params' => $params,
-            ]
-        ));
+        event(
+            new EmailHook(
+                'checkout_success',
+                [
+                    'to' => $user->email,
+                    'params' => $params,
+                ]
+            )
+        );
 
         try {
             $purchase = $newOrder->purchase();
@@ -131,8 +133,11 @@ class CheckoutController extends FrontendController
     public function completed(Request $request): RedirectResponse
     {
         $helper = $this->orderManager->find($request->input('order'));
-
         $order = $helper->getOrder();
+
+        if ($order->isPaymentCompleted()) {
+            return redirect()->to($this->getThanksPageURL($order));
+        }
 
         if ($helper?->completed($request->all())) {
             $params = apply_filters(
@@ -142,17 +147,21 @@ class CheckoutController extends FrontendController
                     'email' => $helper->getOrder()?->user->email,
                     'order_code' => $helper->getOrder()->code,
                 ],
-                $helper->getOrder()?->user,
-                $helper->getOrder()
+                $order?->user,
+                $order
             );
 
-            event(new EmailHook(
-                'payment_success',
-                [
-                    'to' => $helper->getOrder()->user->email,
-                    'params' => $params,
-                ]
-            ));
+            if ($order?->user->email) {
+                event(
+                    new EmailHook(
+                        'payment_success',
+                        [
+                            'to' => $order->user->email,
+                            'params' => $params,
+                        ]
+                    )
+                );
+            }
 
             event(new PaymentSuccess($order));
         }

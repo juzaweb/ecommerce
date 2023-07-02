@@ -11,7 +11,9 @@
 namespace Juzaweb\Ecommerce\Providers;
 
 use Illuminate\Support\Facades\Route;
+use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Facades\ActionRegister;
+use Juzaweb\CMS\Facades\MacroableModel;
 use Juzaweb\CMS\Support\ServiceProvider;
 use Juzaweb\Ecommerce\Actions\EcommerceAction;
 use Juzaweb\Ecommerce\Actions\MenuAction;
@@ -21,8 +23,12 @@ use Juzaweb\Ecommerce\Contracts\CartManagerContract;
 use Juzaweb\Ecommerce\Contracts\OrderCreaterContract;
 use Juzaweb\Ecommerce\Contracts\OrderManagerContract;
 use Juzaweb\Ecommerce\Http\Middleware\EcommerceTheme;
+use Juzaweb\Ecommerce\Models\Order;
+use Juzaweb\Ecommerce\Models\OrderItem;
 use Juzaweb\Ecommerce\Repositories\CartRepository;
 use Juzaweb\Ecommerce\Repositories\CartRepositoryEloquent;
+use Juzaweb\Ecommerce\Repositories\ProductRepository;
+use Juzaweb\Ecommerce\Repositories\ProductRepositoryEloquent;
 use Juzaweb\Ecommerce\Repositories\VariantRepository;
 use Juzaweb\Ecommerce\Repositories\VariantRepositoryEloquent;
 use Juzaweb\Ecommerce\Supports\Creaters\OrderCreater;
@@ -35,19 +41,51 @@ class EcommerceServiceProvider extends ServiceProvider
     public array $bindings = [
         CartRepository::class => CartRepositoryEloquent::class,
         VariantRepository::class => VariantRepositoryEloquent::class,
+        ProductRepository::class => ProductRepositoryEloquent::class,
     ];
 
-    public function boot()
+    public function boot(): void
     {
         Route::pushMiddlewareToGroup('theme', EcommerceTheme::class);
 
         ActionRegister::register([EcommerceAction::class, MenuAction::class, ResourceAction::class]);
+
+        MacroableModel::addMacro(
+            Post::class,
+            'orderItems',
+            function () {
+                /**
+                 * @var Post $this
+                 */
+                return $this->hasMany(
+                    OrderItem::class,
+                    'product_id',
+                    'id'
+                );
+            }
+        );
+
+        MacroableModel::addMacro(
+            Post::class,
+            'orders',
+            function () {
+                /**
+                 * @var Post $this
+                 */
+                return $this->belongsToMany(
+                    Order::class,
+                    OrderItem::getTableName(),
+                    'product_id',
+                    'order_id'
+                );
+            }
+        );
     }
 
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/ecommerce.php',
+            __DIR__.'/../../config/ecommerce.php',
             'ecommerce'
         );
 

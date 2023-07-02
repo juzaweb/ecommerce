@@ -12,8 +12,8 @@ namespace Juzaweb\Ecommerce\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Juzaweb\CMS\Models\Model;
 use Juzaweb\Backend\Models\Post;
+use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\QueryCache\QueryCacheable;
 use Juzaweb\CMS\Traits\ResourceModel;
 
@@ -82,6 +82,7 @@ class ProductVariant extends Model
         'price',
         'compare_price',
         'type',
+        'post_id',
     ];
 
     protected $casts = [

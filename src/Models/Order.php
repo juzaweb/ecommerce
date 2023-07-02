@@ -136,6 +136,11 @@ class Order extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function isPaymentCompleted(): bool
+    {
+        return $this->payment_status == static::PAYMENT_STATUS_COMPLETED;
+    }
+
     public function getPaymentStatusTextAttribute(): string
     {
         return match ($this->payment_status) {
