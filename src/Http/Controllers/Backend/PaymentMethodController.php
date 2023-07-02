@@ -15,19 +15,19 @@ class PaymentMethodController extends BackendController
         getDataForForm as DataForForm;
     }
 
-    protected $viewPrefix = 'ecom::backend.payment_method';
+    protected string $viewPrefix = 'ecom::backend.payment_method';
 
-    protected function getDataTable(...$params)
+    protected function getDataTable(...$params): PaymentMethodDatatable
     {
         return new PaymentMethodDatatable();
     }
 
-    protected function validator(array $attributes, ...$params)
+    protected function validator(array $attributes, ...$params): \Illuminate\Validation\Validator
     {
         $types = config('ecommerce.payment_methods');
         $types = array_keys($types);
 
-        $validator = Validator::make(
+        return Validator::make(
             $attributes,
             [
                 'type' => [
@@ -39,28 +39,26 @@ class PaymentMethodController extends BackendController
                 ]
             ]
         );
-
-        return $validator;
     }
 
-    protected function getModel(...$params)
+    protected function getModel(...$params): string
     {
         return PaymentMethod::class;
     }
 
-    protected function getTitle(...$params)
+    protected function getTitle(...$params): string
     {
         return trans('ecom::content.payment_methods');
     }
 
-    protected function getDataForForm($model, ...$params)
+    protected function getDataForForm($model, ...$params): array
     {
         $data = $this->DataForForm($model);
         $data['methods'] = trans('ecom::content.data.payment_methods');
         return $data;
     }
 
-    protected function parseDataForSave(array $attributes, ...$params)
+    protected function parseDataForSave(array $attributes, ...$params): array
     {
         $attributes['active'] = $attributes['active'] ?? 0;
 

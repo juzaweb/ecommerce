@@ -11,7 +11,6 @@
 namespace Juzaweb\Ecommerce\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
 
 class OrderItem extends Model
@@ -33,6 +32,6 @@ class OrderItem extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Post::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 }
