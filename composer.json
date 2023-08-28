@@ -26,5 +26,16 @@
             "vendor/autoload.php",
             "src/Helpers/helpers.php"
         ]
+    },
+    "replace": {
+        "psr/http-message": "*",
+        "guzzlehttp/guzzle": "*",
+        "guzzlehttp/promises": "*",
+        "guzzlehttp/psr7": "*",
+        "league/flysystem": "*",
+        "phpseclib/phpseclib": "*",
+        "paragonie/random_compat": "*",
+        "paragonie/constant_time_encoding": "*",
+        "graham-campbell/guzzle-factory": "*"
     }
 }

@@ -2,7 +2,7 @@
 /**
  * JUZAWEB CMS - The Best CMS for Laravel Project
  *
- * @package    juzaweb/juzacms
+ * @package    juzaweb/cms
  * @author     The Anh Dang <dangtheanh16@gmail.com>
  * @link       https://juzaweb.com/cms
  * @license    MIT
@@ -26,7 +26,7 @@ class CartTest extends TestCase
         )
         ->limit(3)
         ->get();
-        
+
         foreach ($variants as $variant) {
             $response = $this->json(
                 'POST',
@@ -36,13 +36,13 @@ class CartTest extends TestCase
                     'quantity' => random_int(10, 100),
                 ]
             );
-    
+
             $response->assertStatus(200);
-            
+
             $result = json_decode($response->getContent(), true);
-    
+
             $this->assertTrue($result['status']);
-    
+
             $this->assertDatabaseHas(
                 'carts',
                 ['code' => Arr::get($result, 'data.cart.code')]
