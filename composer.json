@@ -1,5 +1,8 @@
 {
     "name": "juzaweb/ecommerce",
+    "homepage": "https://juzaweb.com",
+    "type": "juzaweb-plugin",
+    "license": "MIT",
     "description": "Ecommerce plugin for website designed by Juzaweb",
     "extra": {
         "juzaweb": {
