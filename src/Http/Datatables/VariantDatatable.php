@@ -2,10 +2,7 @@
 
 namespace Juzaweb\Ecommerce\Http\Datatables;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Arr;
-use Juzaweb\Backend\Http\Datatables\ResourceDatatable;
-use Juzaweb\CMS\Abstracts\DataTable;
+use Juzaweb\Backend\Http\Datatables\PostType\ResourceDatatable;
 use Juzaweb\Ecommerce\Models\ProductVariant;
 
 class VariantDatatable extends ResourceDatatable
@@ -22,7 +19,7 @@ class VariantDatatable extends ResourceDatatable
                 'label' => trans('cms::app.thumbnail'),
                 'width' => '10%',
                 'formatter' => function ($value, $row, $index) {
-                    return '<img src="'. upload_url($value) .'" class="w-100" />';
+                    return '<img src="'.upload_url($value).'" class="w-100" />';
                 }
             ],
             'title' => [
@@ -45,7 +42,7 @@ class VariantDatatable extends ResourceDatatable
         ];
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':

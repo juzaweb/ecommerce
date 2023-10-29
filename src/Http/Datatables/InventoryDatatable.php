@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Ecommerce\Http\Datatables;
 
+use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\DataTable;
@@ -37,10 +38,10 @@ class InventoryDatatable extends DataTable
     /**
      * Query data datatable
      *
-     * @param array $data
+     * @param  array  $data
      * @return Builder
      */
-    public function query($data)
+    public function query(array $data): QueryBuilder
     {
         $query = Post::query();
         $query->select(
@@ -66,7 +67,7 @@ class InventoryDatatable extends DataTable
         return $query;
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':

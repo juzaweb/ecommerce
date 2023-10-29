@@ -14,7 +14,7 @@ class PaymentMethodDatatable extends DataTable
      *
      * @return array
      */
-    public function columns()
+    public function columns(): array
     {
         return [
             'name' => [
@@ -53,10 +53,10 @@ class PaymentMethodDatatable extends DataTable
     /**
      * Query data datatable
      *
-     * @param array $data
+     * @param  array  $data
      * @return Builder
      */
-    public function query($data)
+    public function query(array $data): \Illuminate\Contracts\Database\Query\Builder
     {
         $query = PaymentMethod::select(
             [
@@ -81,7 +81,7 @@ class PaymentMethodDatatable extends DataTable
         return $query;
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':
