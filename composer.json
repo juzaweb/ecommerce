@@ -28,7 +28,7 @@
             "Juzaweb\\Ecommerce\\Tests\\": "tests/"
         },
         "files": [
-            "src/Helpers/helpers.php"
+            "helpers/helpers.php"
         ]
     }
 }

@@ -13,6 +13,7 @@ namespace Juzaweb\Ecommerce\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Models\User;
+use Juzaweb\Network\Traits\Networkable;
 
 /**
  * Juzaweb\Ecommerce\Models\Cart
@@ -43,6 +44,8 @@ use Juzaweb\CMS\Models\User;
  */
 class Cart extends Model
 {
+    use Networkable;
+
     protected $table = 'carts';
     protected $casts = [
         'items' => 'array'
@@ -50,7 +53,7 @@ class Cart extends Model
 
     protected $fillable = [
         'code',
-        'items'
+        'items',
     ];
 
     public function user(): BelongsTo

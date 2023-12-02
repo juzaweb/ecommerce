@@ -18,12 +18,12 @@ class TwigExtension extends AbstractExtension
     /**
      * {@inheritDoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'App_Extension_Ecommerce_Custom';
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('ecom_get_cart_items', 'ecom_get_cart_items'),

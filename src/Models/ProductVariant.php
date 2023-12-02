@@ -16,6 +16,7 @@ use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\QueryCache\QueryCacheable;
 use Juzaweb\CMS\Traits\ResourceModel;
+use Juzaweb\Network\Traits\Networkable;
 
 /**
  * Juzaweb\Ecommerce\Models\Variant
@@ -65,7 +66,7 @@ use Juzaweb\CMS\Traits\ResourceModel;
  */
 class ProductVariant extends Model
 {
-    use ResourceModel, QueryCacheable;
+    use ResourceModel, QueryCacheable, Networkable;
 
     public string $cachePrefix = 'product_variants_';
 

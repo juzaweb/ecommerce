@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Models\User;
 use Juzaweb\CMS\Traits\ResourceModel;
+use Juzaweb\Network\Traits\Networkable;
 
 /**
  * Juzaweb\Ecommerce\Models\Order
@@ -75,7 +76,7 @@ use Juzaweb\CMS\Traits\ResourceModel;
  */
 class Order extends Model
 {
-    use ResourceModel;
+    use ResourceModel, Networkable;
 
     protected $table = 'orders';
 
@@ -108,8 +109,8 @@ class Order extends Model
         'payment_status_text',
     ];
 
-    const PAYMENT_STATUS_PENDING = 'pending';
-    const PAYMENT_STATUS_COMPLETED = 'completed';
+    public const PAYMENT_STATUS_PENDING = 'pending';
+    public const PAYMENT_STATUS_COMPLETED = 'completed';
 
     public static function findByCode(string $code, array $columns = ['*']): null|static
     {
