@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::table(
             'carts',
             function (Blueprint $table) {
-                $table->unsignedBigInteger('site_id')->nullable()->index();
+                $table->unsignedBigInteger('site_id')->default(0)->index();
                 $table->dropUnique(['code']);
                 $table->unique(['code', 'site_id']);
             }
@@ -24,7 +24,7 @@ return new class extends Migration {
         Schema::table(
             'orders',
             function (Blueprint $table) {
-                $table->unsignedBigInteger('site_id')->nullable()->index();
+                $table->unsignedBigInteger('site_id')->default(0)->index();
                 $table->dropUnique(['code']);
                 $table->unique(['code', 'site_id']);
             }
@@ -33,7 +33,7 @@ return new class extends Migration {
         Schema::table(
             'product_variants',
             function (Blueprint $table) {
-                $table->unsignedBigInteger('site_id')->nullable()->index();
+                $table->unsignedBigInteger('site_id')->default(0)->index();
             }
         );
     }

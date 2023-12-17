@@ -2,7 +2,6 @@
 
 namespace Juzaweb\Ecommerce\Actions;
 
-use Illuminate\Database\Eloquent\Model;
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\Ecommerce\Http\Datatables\InventoryDatatable;
 use Juzaweb\Ecommerce\Http\Datatables\VariantDatatable;
@@ -10,12 +9,12 @@ use Juzaweb\Ecommerce\Repositories\VariantRepository;
 
 class ResourceAction extends Action
 {
-    public function handle()
+    public function handle(): void
     {
         $this->addAction(Action::INIT_ACTION, [$this, 'registerResources']);
     }
 
-    public function registerResources()
+    public function registerResources(): void
     {
         $this->hookAction->registerResource(
             'variants',

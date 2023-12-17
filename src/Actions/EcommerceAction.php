@@ -60,7 +60,7 @@ class EcommerceAction extends Action
 
         $this->addAction(
             Action::FRONTEND_CALL_ACTION,
-            [$this, 'registerFrontendAjax']
+            [$this, 'registerFrontendAjaxs']
         );
 
         $this->addAction(
@@ -234,7 +234,7 @@ class EcommerceAction extends Action
         return $params;
     }
 
-    public function registerFrontendAjax()
+    public function registerFrontendAjaxs(): void
     {
         HookAction::registerFrontendAjax(
             'checkout',
@@ -281,7 +281,7 @@ class EcommerceAction extends Action
         );
     }
 
-    public function registerEmailHooks()
+    public function registerEmailHooks(): void
     {
         $this->hookAction->registerEmailHook(
             'checkout_success',
