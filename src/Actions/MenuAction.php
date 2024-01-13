@@ -11,11 +11,11 @@ class MenuAction extends Action
     {
         $this->addAction(
             Action::BACKEND_INIT,
-            [$this, 'addAdminMenu']
+            [$this, 'addAdminMenus']
         );
     }
 
-    public function addAdminMenu()
+    public function addAdminMenus(): void
     {
         HookAction::registerAdminPage(
             'ecommerce',
