@@ -16,7 +16,7 @@ use Juzaweb\Tests\TestCase;
 
 class CartTest extends TestCase
 {
-    public function testAddToCart()
+    public function testAddToCart(): void
     {
         $variants = ProductVariant::whereHas(
             'product',
