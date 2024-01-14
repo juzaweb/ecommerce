@@ -3,7 +3,6 @@ name: Schedule run phpunit test suite
 on:
   schedule:
     - cron: '0 * * * *'
-  branchs:
 
 jobs:
   phpunit-test-suite:
