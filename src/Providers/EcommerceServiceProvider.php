@@ -25,6 +25,8 @@ use Juzaweb\Ecommerce\Contracts\OrderManagerContract;
 use Juzaweb\Ecommerce\Http\Middleware\EcommerceTheme;
 use Juzaweb\Ecommerce\Models\Order;
 use Juzaweb\Ecommerce\Models\OrderItem;
+use Juzaweb\Ecommerce\Models\ProductVariant;
+use Juzaweb\Ecommerce\Observes\ProductObserve;
 use Juzaweb\Ecommerce\Repositories\CartRepository;
 use Juzaweb\Ecommerce\Repositories\CartRepositoryEloquent;
 use Juzaweb\Ecommerce\Repositories\ProductRepository;
@@ -80,6 +82,21 @@ class EcommerceServiceProvider extends ServiceProvider
                 );
             }
         );
+
+        MacroableModel::addMacro(
+            Post::class,
+            'variants',
+            function () {
+                /**
+                 * @var Post $this
+                 */
+                return $this->hasMany(
+                    ProductVariant::class,
+                    'post_id',
+                    'id'
+                );
+            }
+        );
     }
 
     public function register(): void
@@ -117,5 +134,7 @@ class EcommerceServiceProvider extends ServiceProvider
                 );
             }
         );
+
+        //Post::observe(ProductObserve::class);
     }
 }

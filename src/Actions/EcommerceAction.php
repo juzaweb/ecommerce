@@ -10,8 +10,8 @@
 
 namespace Juzaweb\Ecommerce\Actions;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\Ecommerce\Contracts\CartManagerContract;
@@ -19,13 +19,14 @@ use Juzaweb\Ecommerce\Http\Controllers\Frontend\CartController;
 use Juzaweb\Ecommerce\Http\Controllers\Frontend\CheckoutController;
 use Juzaweb\Ecommerce\Http\Resources\OrderResource;
 use Juzaweb\Ecommerce\Http\Resources\PaymentMethodCollectionResource;
+use Juzaweb\Ecommerce\Http\Resources\ProductVariantResource;
 use Juzaweb\Ecommerce\Models\Order;
 use Juzaweb\Ecommerce\Models\PaymentMethod;
 use Juzaweb\Ecommerce\Models\ProductVariant;
 
 class EcommerceAction extends Action
 {
-    public function handle()
+    public function handle(): void
     {
         $this->addAction(
             Action::INIT_ACTION,
@@ -78,14 +79,22 @@ class EcommerceAction extends Action
             [$this, 'registerEmailHooks']
         );
 
-        $this->addFilter(
-            'frontend.post_type.products.detail.data',
-            [$this, 'addVariantsProductDetail']
-        );
+        $this->addFilter('post.withFrontendDetailBuilder', [$this, 'addWithVariantsProductDetail']);
+
+        $this->addFilter('jw.resource.post.products', [$this, 'addVariantsProductDetail'], 20, 2);
     }
 
-    public function registerPostTypes()
+    public function registerPostTypes(): void
     {
+        $productInvisibleMetas = [
+            'price',
+            'sku_code',
+            'barcode',
+            'quantity',
+            'inventory_management',
+            'disable_out_of_stock',
+        ];
+
         HookAction::registerPostType(
             'products',
             [
@@ -96,6 +105,11 @@ class EcommerceAction extends Action
                     'category',
                     'tag'
                 ],
+                'metas' => collect($productInvisibleMetas)
+                    ->mapWithKeys(
+                        fn ($item) => [$item => ['visible' => false]]
+                    )
+                    ->toArray(),
             ]
         );
 
@@ -118,7 +132,7 @@ class EcommerceAction extends Action
         );
     }
 
-    public function registerConfigs()
+    public function registerConfigs(): void
     {
         HookAction::registerConfig(
             [
@@ -128,10 +142,10 @@ class EcommerceAction extends Action
         );
     }
 
-    public function addFormProduct($model)
+    public function addFormProduct($model): void
     {
         $variant = ProductVariant::findByProduct($model->id);
-        if (empty($variant)) {
+        if ($variant === null) {
             $variant = new ProductVariant();
         }
 
@@ -183,7 +197,7 @@ class EcommerceAction extends Action
                 $variantData['names'] = ['Default'];
                 $variantData['post_id'] = $model->id;
 
-                $variant = ProductVariant::updateOrCreate(
+                ProductVariant::updateOrCreate(
                     ['id' => $variant->id ?? 0],
                     $variantData
                 );
@@ -308,14 +322,20 @@ class EcommerceAction extends Action
         );
     }
 
-    public function addVariantsProductDetail(array $data): array
+    public function addWithVariantsProductDetail(array $with): array
     {
-        $data['post']['metas']['variants'] = ProductVariant::cacheFor(
+        $with['variants'] = fn ($q) => $q->cacheFor(
             config('juzaweb.performance.query_cache.lifetime')
-        )
-            ->wherePostId($data['post']['id'])
-            ->get()
-            ->toArray();
+        );
+
+        return $with;
+    }
+
+    public function addVariantsProductDetail(array $data, Post $resource): array
+    {
+        $data['variants'] = ProductVariantResource::collection($resource->variants)
+            ->response()
+            ->getData(true)['data'];
         return $data;
     }
 }
