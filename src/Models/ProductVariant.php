@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Juzaweb\Backend\Models\Post;
@@ -93,7 +94,7 @@ class ProductVariant extends Model
 
     protected string $fieldName = 'title';
 
-    public static function findByProduct($productId): \Illuminate\Database\Eloquent\Model|ProductVariant|null
+    public static function findByProduct($productId): EloquentModel|ProductVariant|null
     {
         return self::where('post_id', '=', $productId)
             ->orderBy('id', 'ASC')

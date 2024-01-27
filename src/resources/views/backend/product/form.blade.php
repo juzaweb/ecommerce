@@ -2,6 +2,8 @@
     /**
      * @var \Juzaweb\Backend\Models\Post $model
      */
+
+    $downloadLinks = \Juzaweb\Ecommerce\Models\DownloadLink::where(['product_id' => $model->id])->get();
 @endphp
 
 <div class="card">
@@ -91,6 +93,11 @@
                         </tr>
                     </thead>
                     <tbody class="repeater-items">
+                    @foreach($downloadLinks as $downloadLink)
+                        @component('ecom::backend.product.components.download-link-item', ['marker' => $downloadLink->id, 'item' => $downloadLink])
+
+                        @endcomponent
+                    @endforeach
 
                     </tbody>
                 </table>

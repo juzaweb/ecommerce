@@ -5,6 +5,11 @@
                class="form-control"
                value="{{ $item->name ?? '' }}"
         />
+        <input type="hidden"
+               name="download_links[{{ $marker }}][id]"
+               class="form-control"
+               value="{{ $item->id ?? '' }}"
+        />
     </td>
     <td>
         {{ Field::uploadUrl(

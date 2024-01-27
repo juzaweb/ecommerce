@@ -20,6 +20,7 @@ use Juzaweb\Ecommerce\Http\Controllers\Frontend\CheckoutController;
 use Juzaweb\Ecommerce\Http\Resources\OrderResource;
 use Juzaweb\Ecommerce\Http\Resources\PaymentMethodCollectionResource;
 use Juzaweb\Ecommerce\Http\Resources\ProductVariantResource;
+use Juzaweb\Ecommerce\Models\DownloadLink;
 use Juzaweb\Ecommerce\Models\Order;
 use Juzaweb\Ecommerce\Models\PaymentMethod;
 use Juzaweb\Ecommerce\Models\ProductVariant;
@@ -205,6 +206,21 @@ class EcommerceAction extends Action
                     $variantData
                 );
             }
+        }
+
+        if ($downloadLinks = Arr::get($data, 'download_links')) {
+            foreach ($downloadLinks as $link) {
+                $link['product_id'] = $model->id;
+                $ids[] = DownloadLink::updateOrCreate(
+                    [
+                        'id' => $link['id'],
+                        'product_id' => $model->id,
+                    ],
+                    $link
+                )->id;
+            }
+
+            DownloadLink::whereNotIn('id', $ids)->where('product_id', $model->id)->delete();
         }
     }
 
