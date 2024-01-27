@@ -34,4 +34,9 @@ class Product extends Post
             'id'
         );
     }
+
+    public function downloadLinks()
+    {
+        return $this->hasMany(DownloadLink::class, 'product_id', 'id');
+    }
 }

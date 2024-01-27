@@ -14,7 +14,8 @@
                 'placeholder' => 'https://',
                 'show_label' => false,
                 'id' => "download-links-{$marker}",
-                'disk' => 'protected'
+                'disk' => 'protected',
+                'value' => $item->url ?? '',
             ]
         ) }}
     </td>
