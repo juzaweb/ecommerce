@@ -25,6 +25,10 @@ return new class extends Migration {
                 $table->foreignId('product_id')
                     ->constrained('posts')
                     ->onDelete('cascade');
+
+                $table->foreignId('variant_id')
+                    ->constrained('product_variants')
+                    ->onDelete('cascade');
             }
         );
     }

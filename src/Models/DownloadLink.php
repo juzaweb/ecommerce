@@ -14,6 +14,7 @@ class DownloadLink extends Model
 
     protected $fillable = [
         'product_id',
+        'variant_id',
         'name',
         'url',
     ];

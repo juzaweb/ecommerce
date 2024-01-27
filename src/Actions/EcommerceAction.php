@@ -201,26 +201,29 @@ class EcommerceAction extends Action
                 $variantData['names'] = ['Default'];
                 $variantData['post_id'] = $model->id;
 
-                ProductVariant::updateOrCreate(
+                $variant = ProductVariant::updateOrCreate(
                     ['id' => $variant->id ?? 0],
                     $variantData
                 );
             }
-        }
 
-        if ($downloadLinks = Arr::get($data, 'download_links')) {
-            foreach ($downloadLinks as $link) {
-                $link['product_id'] = $model->id;
-                $ids[] = DownloadLink::updateOrCreate(
-                    [
-                        'id' => $link['id'],
-                        'product_id' => $model->id,
-                    ],
-                    $link
-                )->id;
+            if ($downloadLinks = Arr::get($data, 'download_links')) {
+                foreach ($downloadLinks as $link) {
+                    $link['product_id'] = $model->id;
+                    $ids[] = DownloadLink::updateOrCreate(
+                        [
+                            'id' => $link['id'],
+                            'product_id' => $model->id,
+                            'variant_id' => $variant->id,
+                        ],
+                        $link
+                    )->id;
+                }
+
+                DownloadLink::whereNotIn('id', $ids)
+                    ->where(['product_id' => $model->id, 'variant_id' => $variant->id])
+                    ->delete();
             }
-
-            DownloadLink::whereNotIn('id', $ids)->where('product_id', $model->id)->delete();
         }
     }
 

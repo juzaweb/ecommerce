@@ -1,9 +1,10 @@
 @php
     /**
      * @var \Juzaweb\Backend\Models\Post $model
+     * @var \Juzaweb\Ecommerce\Models\ProductVariant $variant
      */
 
-    $downloadLinks = \Juzaweb\Ecommerce\Models\DownloadLink::where(['product_id' => $model->id])->get();
+    $downloadLinks = \Juzaweb\Ecommerce\Models\DownloadLink::where(['variant_id' => $variant->id])->get();
 @endphp
 
 <div class="card">
