@@ -13,6 +13,11 @@ class MenuAction extends Action
             Action::BACKEND_INIT,
             [$this, 'addAdminMenus']
         );
+
+        $this->addAction(
+            Action::FRONTEND_INIT,
+            [$this, 'addProfilePages']
+        );
     }
 
     public function addAdminMenus(): void
@@ -60,6 +65,21 @@ class MenuAction extends Action
                     'icon' => 'fa fa-shopping-cart',
                     'position' => 50,
                     'parent' => 'ecommerce'
+                ]
+            ]
+        );
+    }
+
+    public function addProfilePages(): void
+    {
+        $this->registerProfilePage(
+            'ecommerce.orders',
+            [
+                'title' => __('Orders'),
+                'contents' => 'ecom::frontend.profile.orders',
+                'icon' => 'shopping-cart',
+                'data' => [
+                    //
                 ]
             ]
         );

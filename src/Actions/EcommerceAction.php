@@ -93,6 +93,7 @@ class EcommerceAction extends Action
             'quantity',
             'inventory_management',
             'disable_out_of_stock',
+            'downloadable',
         ];
 
         HookAction::registerPostType(
@@ -173,6 +174,8 @@ class EcommerceAction extends Action
 
         $metas['inventory_management'] = $metas['inventory_management'] ?? 0;
         $metas['disable_out_of_stock'] = $metas['disable_out_of_stock'] ?? 0;
+        $metas['downloadable'] = $metas['downloadable'] ?? 0;
+
         if ($metas['quantity']) {
             $metas['quantity'] = (int) $metas['quantity'];
             $metas['quantity'] = max($metas['quantity'], 0);
