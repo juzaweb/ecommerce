@@ -13,7 +13,7 @@ class VariantController extends BackendController
 
     protected $viewPrefix = 'ecom::backend.variant';
 
-    protected function getDataTable(...$params)
+    protected function getDataTable(...$params): \Juzaweb\CMS\Abstracts\DataTable
     {
         return;
     }

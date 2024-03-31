@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Ecommerce\Actions;
 
+use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\Ecommerce\Http\Datatables\InventoryDatatable;
 use Juzaweb\Ecommerce\Http\Datatables\VariantDatatable;
@@ -12,6 +13,8 @@ class ResourceAction extends Action
     public function handle(): void
     {
         $this->addAction(Action::INIT_ACTION, [$this, 'registerResources']);
+        $this->addAction('resource.variants.form_left', [$this, 'addVariantInfo']);
+        $this->addFilter('resource.variants.parseDataForSave', [$this, 'parseDataForSave']);
     }
 
     public function registerResources(): void
@@ -31,42 +34,9 @@ class ResourceAction extends Action
                     'description' => [
                         'type' => 'textarea',
                     ],
-                    'row' => [
-                        'type' => 'row',
-                        'fields' => [
-                            'col' => [
-                                'type' => 'col',
-                                'col' => 6,
-                                'fields' => [
-                                    'price' => [
-                                        'label' => trans('ecom::content.price'),
-                                        'data' => [
-                                            'prefix' => '$',
-                                        ]
-                                    ],
-                                ]
-                            ],
-                            'col2' => [
-                                'type' => 'col',
-                                'col' => 6,
-                                'fields' => [
-                                    'compare_price' => [
-                                        'label' => trans('ecom::content.compare_price'),
-                                        'data' => [
-                                            'prefix' => '$',
-                                            'class' => 'is-number'
-                                        ]
-                                    ],
-                                ]
-                            ],
-                        ]
-                    ],
                     'thumbnail' => [
                         'type' => 'image',
                         'sidebar' => true,
-                    ],
-                    'images' => [
-                        'type' => 'images'
                     ],
                     'sku_code' => [
                         'label' => trans('ecom::content.sku_code'),
@@ -92,5 +62,21 @@ class ResourceAction extends Action
                 'create_button' => false,
             ]
         );
+    }
+
+    public function addVariantInfo($model): void
+    {
+        echo e(view('ecom::backend.product.components.variant-info', ['variant' => $model, 'model' => $model->product]));
+    }
+
+    public function parseDataForSave($attributes)
+    {
+        $attributes['price'] = Arr::get($attributes, 'meta.price');
+        $attributes['compare_price'] = Arr::get($attributes, 'meta.compare_price');
+        $attributes['sku_code'] = Arr::get($attributes, 'meta.sku_code');
+        $attributes['barcode'] = Arr::get($attributes, 'meta.barcode');
+        $attributes['quantity'] = Arr::get($attributes, 'meta.quantity');
+        $attributes['images'] = Arr::get($attributes, 'meta.images');
+        return $attributes;
     }
 }
