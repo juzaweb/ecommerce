@@ -1,3 +1,13 @@
+### v1.0.4 
+* :+1: Download link in thank you page
+* :+1: Hash download link url
+* :+1: Show download profile
+* :+1: Update composer.json
+* :+1: Show download profile
+* :+1: Show order profile
+* :+1: Variant product
+* :+1: Support downloadable
+
 ### v1.0.3 
 * :bug: Fix save product metas
 * :+1: Test schedule
