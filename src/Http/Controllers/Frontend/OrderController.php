@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Inertia\Response;
 use Juzaweb\CMS\Contracts\HookActionContract;
 use Juzaweb\CMS\Http\Controllers\FrontendController;
+use Juzaweb\Ecommerce\Http\Resources\OrderResource;
 use Juzaweb\Ecommerce\Models\Order;
 
 class OrderController extends FrontendController
@@ -51,7 +52,21 @@ class OrderController extends FrontendController
 
         return $this->view(
             'theme::profile.index',
-            compact('order', 'pages', 'page', 'title')
+            array_merge(
+                compact('pages', 'page', 'title'),
+                [
+                    'order' => OrderResource::make($order)->resolve(),
+                ]
+            )
         );
+    }
+
+    public function doDownload(string $token): View|Factory|Response|string
+    {
+
+
+        abort_unless($order->isPaymentCompleted(), 403);
+
+
     }
 }

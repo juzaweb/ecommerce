@@ -38,6 +38,10 @@ use Juzaweb\CMS\Traits\ResourceModel;
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentMethod whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentMethod whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder active()
+ * @property int|null $site_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Ecommerce\Models\Order> $orders
+ * @property-read int|null $orders_count
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentMethod whereSiteId($value)
  * @mixin \Eloquent
  */
 class PaymentMethod extends Model

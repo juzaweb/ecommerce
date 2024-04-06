@@ -10,6 +10,7 @@
 
 use Juzaweb\Ecommerce\Http\Controllers\Frontend\OrderController;
 
-Route::get('profile/ecommerce/{order:code}/download', [OrderController::class, 'download'])
+Route::get('profile/ecommerce/orders/{order:code}/download', [OrderController::class, 'download'])
     ->name('ecommerce.orders.download');
- 
+Route::get('profile/ecommerce/orders/{order:code}/download/{token}', [OrderController::class, 'doDownload'])
+    ->name('ecommerce.orders.do-download');

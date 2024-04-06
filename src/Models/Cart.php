@@ -40,6 +40,8 @@ use Juzaweb\Network\Traits\Networkable;
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereItems($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUserId($value)
+ * @property int $site_id
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereSiteId($value)
  * @mixin \Eloquent
  */
 class Cart extends Model

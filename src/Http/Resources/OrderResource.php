@@ -56,6 +56,12 @@ class OrderResource extends JsonResource
             $resource['downloadable_products_exists'] = $this->resource->downloadable_products_exists;
         }
 
+        if ($this->resource->relationLoaded('downloadableProducts')) {
+            $resource['downloadable_products'] = DownloadableProductCollection::make($this->resource->downloadableProducts)
+                ->withOrder($this->resource)
+                ->resolve();
+        }
+
         return $resource;
     }
 }

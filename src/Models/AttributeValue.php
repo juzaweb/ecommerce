@@ -25,10 +25,10 @@ use Juzaweb\CMS\Models\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue query()
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue whereValue($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue whereValueType($value)
- * @mixin \Eloquent
  * @property-read Attribute $attribute
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue whereAttributeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttributeValue whereId($value)
+ * @mixin \Eloquent
  */
 class AttributeValue extends Model
 {

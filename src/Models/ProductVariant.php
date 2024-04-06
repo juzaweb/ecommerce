@@ -41,7 +41,6 @@ use Juzaweb\Network\Traits\Networkable;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereSkuCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereTitle($value)
- * @mixin \Eloquent
  * @property string|null $thumbnail
  * @property string|null $summary
  * @property string|null $description
@@ -64,6 +63,10 @@ use Juzaweb\Network\Traits\Networkable;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereThumbnail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereUpdatedAt($value)
+ * @property int $site_id
+ * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereFilter(array $params = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereSiteId($value)
+ * @mixin \Eloquent
  */
 class ProductVariant extends Model
 {

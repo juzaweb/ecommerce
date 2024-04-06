@@ -76,6 +76,15 @@ use Juzaweb\Network\Traits\Networkable;
  * @method static Builder|Order whereUpdatedAt($value)
  * @method static Builder|Order whereUserId($value)
  * @method static Builder|Order whereToken($value)
+ * @property string $token
+ * @property int $site_id
+ * @property-read string $payment_status_text
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Ecommerce\Models\OrderItem> $orderItems
+ * @property-read int|null $order_items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Ecommerce\Models\Product> $products
+ * @property-read int|null $products_count
+ * @method static Builder|Order whereFilter(array $params = [])
+ * @method static Builder|Order whereSiteId($value)
  * @mixin Eloquent
  */
 class Order extends Model
