@@ -269,6 +269,7 @@ class EcommerceAction extends Action
             abort_if($order === null, 404);
 
             $order->load(['orderItems', 'paymentMethod']);
+            $order->loadExists(['downloadableProducts']);
 
             $params['order'] = OrderResource::make($order)->toArray(request());
         }

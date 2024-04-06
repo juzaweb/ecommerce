@@ -242,6 +242,12 @@
 
                         <div class="order-success unprint">
 {#                            {{ do_action('ecom.thankyou_page.btns.left', order) }}#}
+                            {% if order.downloadable_products_exists %}
+                            <a href="{{ route('ecommerce.orders.download', [order.code]) }}"
+                               class="btn btn-success"
+                               style="font-size: 17px; padding: 12px 15px;">Download</a>
+                            {% endif %}
+
                             <a href="/" class="btn btn-primary">
                                 {{ trans('ecom::content.continue_shopping') }}
                             </a>
