@@ -29,9 +29,11 @@
                             {{ __('View') }}
                         </a>
 
-                        <a class="dropdown-item" href="{{ route('ecommerce.orders.download', [order.code]) }}">
-                            {{ __('Download') }}
-                        </a>
+                        {% if order.payment_status == 'completed' and order.downloadable_products_exists %}
+                            <a class="dropdown-item" href="{{ route('ecommerce.orders.download', [order.code]) }}">
+                                {{ __('Download') }}
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </td>

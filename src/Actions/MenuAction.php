@@ -84,6 +84,7 @@ class MenuAction extends Action
                 'data' => [
                     'orders' => fn () => OrderResource::collection(
                         Order::with(['paymentMethod'])
+                            ->withExists(['downloadableProducts'])
                             ->where('user_id', auth()->id())
                             ->paginate(10)
                     ),

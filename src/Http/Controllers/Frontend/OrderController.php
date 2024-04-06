@@ -26,15 +26,24 @@ class OrderController extends FrontendController
 
     public function download(Order $order): View|Factory|Response|string
     {
-        $pages = $this->hookAction->getProfilePages()->toArray();
+        $pages = $this->hookAction->getProfilePages()
+            ->where('show_menu', true)
+            ->map(function ($item) {
+                $item['active'] = $item['slug'] === 'ecommerce/orders';
+                return $item;
+            })
+            ->toArray();
+
+        $title = __('Download').": #{$order->code}";
+
         $page = [
-            'title' => __('Download').': #'.$order->code,
+            'title' => $title,
             'contents' => 'ecom::frontend.profile.orders.download',
         ];
 
         return $this->view(
             'theme::profile.index',
-            compact('order', 'pages', 'page')
+            compact('order', 'pages', 'page', 'title')
         );
     }
 }

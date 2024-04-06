@@ -10,8 +10,12 @@
 
 namespace Juzaweb\Ecommerce\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Models\User;
 use Juzaweb\CMS\Traits\ResourceModel;
@@ -41,38 +45,38 @@ use Juzaweb\Network\Traits\Networkable;
  * @property string $payment_status pending
  * @property string $delivery_status pending
  * @property int|null $user_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Juzaweb\Ecommerce\Models\PaymentMethod|null $paymentMethod
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read PaymentMethod|null $paymentMethod
  * @property-read User|null $user
- * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Order query()
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereCountryCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereDeliveryStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscountCodes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscountTargetType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereOtherAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order wherePaymentMethodId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order wherePaymentMethodName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order wherePaymentStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order wherePhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotalPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereToken($value)
- * @mixin \Eloquent
+ * @method static Builder|Order newModelQuery()
+ * @method static Builder|Order newQuery()
+ * @method static Builder|Order query()
+ * @method static Builder|Order whereAddress($value)
+ * @method static Builder|Order whereCode($value)
+ * @method static Builder|Order whereCountryCode($value)
+ * @method static Builder|Order whereCreatedAt($value)
+ * @method static Builder|Order whereDeliveryStatus($value)
+ * @method static Builder|Order whereDiscount($value)
+ * @method static Builder|Order whereDiscountCodes($value)
+ * @method static Builder|Order whereDiscountTargetType($value)
+ * @method static Builder|Order whereEmail($value)
+ * @method static Builder|Order whereId($value)
+ * @method static Builder|Order whereKey($value)
+ * @method static Builder|Order whereName($value)
+ * @method static Builder|Order whereNotes($value)
+ * @method static Builder|Order whereOtherAddress($value)
+ * @method static Builder|Order wherePaymentMethodId($value)
+ * @method static Builder|Order wherePaymentMethodName($value)
+ * @method static Builder|Order wherePaymentStatus($value)
+ * @method static Builder|Order wherePhone($value)
+ * @method static Builder|Order whereQuantity($value)
+ * @method static Builder|Order whereTotal($value)
+ * @method static Builder|Order whereTotalPrice($value)
+ * @method static Builder|Order whereUpdatedAt($value)
+ * @method static Builder|Order whereUserId($value)
+ * @method static Builder|Order whereToken($value)
+ * @mixin Eloquent
  */
 class Order extends Model
 {
@@ -135,6 +139,23 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'order_items',
+            'order_id',
+            'product_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function downloadableProducts()
+    {
+        return $this->products()->whereMeta('downloadable', 1);
     }
 
     public function isPaymentCompleted(): bool
