@@ -76,9 +76,7 @@ class OrderController extends FrontendController
             abort(404, __('Download link has been expired'));
         }
 
-        $downloadLink = DownloadLink::where(['id' => $decode['id']])->first();
-
-        abort_if($downloadLink === null, 404);
+        $downloadLink = DownloadLink::findOrFail($decode['id']);
 
         //$downloadLink->increment('download_count');
 
