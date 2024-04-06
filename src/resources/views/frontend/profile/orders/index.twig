@@ -28,6 +28,10 @@
                         <a class="dropdown-item" href="{{ thank_page }}/{{ order.token }}" target="_blank">
                             {{ __('View') }}
                         </a>
+
+                        <a class="dropdown-item" href="{{ route('ecommerce.orders.download', [order.code]) }}">
+                            {{ __('Download') }}
+                        </a>
                     </div>
                 </div>
             </td>
