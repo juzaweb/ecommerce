@@ -26,6 +26,8 @@ class OrderController extends FrontendController
 
     public function download(Order $order): View|Factory|Response|string
     {
+        abort_unless($order->isPaymentCompleted(), 403);
+
         $pages = $this->hookAction->getProfilePages()
             ->where('show_menu', true)
             ->map(function ($item) {
