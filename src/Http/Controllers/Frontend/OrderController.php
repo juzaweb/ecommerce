@@ -41,6 +41,12 @@ class OrderController extends FrontendController
             'contents' => 'ecom::frontend.profile.orders.download',
         ];
 
+        $order->load([
+            'downloadableProducts' => fn ($q) => $q
+                ->with(['downloadLinks'])
+                ->select(['posts.id', 'posts.title', 'posts.slug'])
+        ]);
+
         return $this->view(
             'theme::profile.index',
             compact('order', 'pages', 'page', 'title')
