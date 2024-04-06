@@ -3,8 +3,9 @@
         <tr>
             <th scope="col" style="width: 15%;">{{ __('Actions') }}</th>
             <th scope="col">{{ __('Order') }}</th>
+            <th scope="col" style="width: 15%;">{{ __('Payment Method') }}</th>
             <th scope="col" style="width: 15%;">{{ __('Payment Status') }}</th>
-            <th scope="col" class="w-25">{{ __('Created at') }}</th>
+            <th scope="col" style="width: 15%;">{{ __('Created at') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -35,7 +36,16 @@
                     #{{ order.code }}
                 </a>
             </td>
-            <td>{{ order.payment_status_text }}</td>
+            <td>{{ order.payment_method.name }}</td>
+            <td>
+                {% if order.payment_status == 'completed' %}
+                    <span class="badge badge-success">{{ order.payment_status_text }}</span>
+                {% elseif order.payment_status == 'pending' %}
+                    <span class="badge badge-warning">{{ order.payment_status_text }}</span>
+                {% else %}
+                    <span class="badge badge-danger">{{ order.payment_status_text }}</span>
+                {% endif %}
+            </td>
             <td>{{ order.created_at }}</td>
         </tr>
     {% endfor %}
