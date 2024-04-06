@@ -265,6 +265,9 @@ class EcommerceAction extends Action
             abort_if($orderToken === null, 404);
 
             $order = Order::findByToken($orderToken);
+
+            abort_if($order === null, 404);
+
             $order->load(['orderItems', 'paymentMethod']);
 
             $params['order'] = OrderResource::make($order)->toArray(request());

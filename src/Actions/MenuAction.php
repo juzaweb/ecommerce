@@ -6,6 +6,7 @@ use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\Ecommerce\Http\Resources\OrderResource;
 use Juzaweb\Ecommerce\Models\Order;
+use Juzaweb\Ecommerce\Models\Product;
 
 class MenuAction extends Action
 {
@@ -91,6 +92,26 @@ class MenuAction extends Action
 
                         return $thanksPage ? get_page_url($thanksPage) : null;
                     }
+                ]
+            ]
+        );
+
+        $this->registerProfilePage(
+            'ecommerce.download',
+            [
+                'title' => __('Download'),
+                'contents' => 'ecom::frontend.profile.download.index',
+                'icon' => 'download',
+                'data' => [
+                    'purchased' => fn () => Product::select(['title', 'id'])
+                        ->whereIn(
+                            'id',
+                            Order::select(['order_items.product_id'])
+                                ->join('order_items', 'order_items.order_id', 'orders.id')
+                                ->where('orders.user_id', auth()->id())
+                                ->where('orders.payment_status', Order::PAYMENT_STATUS_COMPLETED)
+                        )
+                        ->paginate(10)
                 ]
             ]
         );

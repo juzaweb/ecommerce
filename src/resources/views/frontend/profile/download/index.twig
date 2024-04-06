@@ -1,0 +1,24 @@
+<table class="table module-table">
+    <thead>
+        <tr>
+            <th>{{ __('Product') }}</th>
+            <th style="width: 25%">{{ __('Actions') }}</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for item in purchased.data %}
+        <tr>
+            <td>{{ item.title }}</td>
+            <td></td>
+        </tr>
+    {% endfor %}
+    {% if purchased.data is empty %}
+        <tr>
+            <td colspan="2">{{ __('No results found') }}</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
+
+{{ paginate_links(purchased, 'theme::components.pagination') }}

@@ -4,6 +4,7 @@
             <th scope="col">{{ __('Order') }}</th>
             <th scope="col" class="w-25">{{ __('Status') }}</th>
             <th scope="col" class="w-25">{{ __('Created at') }}</th>
+            <th scope="col" class="w-25">{{ __('Actions') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -17,6 +18,19 @@
             </td>
             <td>{{ order.payment_status_text }}</td>
             <td>{{ order.created_at }}</td>
+            <td>
+                <div class="dropdown show">
+                    <a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenu-{{ order.code }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ __('Actions') }}
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu-{{ order.code }}">
+                        <a class="dropdown-item" href="{{ thank_page }}/{{ order.token }}" target="_blank">
+                            {{ __('View') }}
+                        </a>
+                    </div>
+                </div>
+            </td>
         </tr>
     {% endfor %}
     </tbody>
