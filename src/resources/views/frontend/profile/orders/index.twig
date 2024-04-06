@@ -1,0 +1,25 @@
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col">{{ __('Order') }}</th>
+            <th scope="col" class="w-25">{{ __('Status') }}</th>
+            <th scope="col" class="w-25">{{ __('Created at') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for order in orders.data %}
+        <tr>
+            <td>
+                <a target="_blank" href="{{ thank_page }}/{{ order.token }}">
+                    #{{ order.code }}
+                </a>
+            </td>
+            <td>{{ order.payment_status_text }}</td>
+            <td>{{ order.created_at }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{{ paginate_links(orders, 'theme::components.pagination') }}

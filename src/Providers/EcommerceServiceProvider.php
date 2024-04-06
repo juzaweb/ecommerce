@@ -15,6 +15,7 @@ use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Facades\ActionRegister;
 use Juzaweb\CMS\Facades\MacroableModel;
 use Juzaweb\CMS\Support\ServiceProvider;
+use Juzaweb\Ecommerce\Actions\ConfigAction;
 use Juzaweb\Ecommerce\Actions\EcommerceAction;
 use Juzaweb\Ecommerce\Actions\MenuAction;
 use Juzaweb\Ecommerce\Actions\ResourceAction;
@@ -50,7 +51,12 @@ class EcommerceServiceProvider extends ServiceProvider
     {
         Route::pushMiddlewareToGroup('theme', EcommerceTheme::class);
 
-        ActionRegister::register([EcommerceAction::class, MenuAction::class, ResourceAction::class]);
+        ActionRegister::register([
+            EcommerceAction::class,
+            MenuAction::class,
+            ResourceAction::class,
+            ConfigAction::class,
+        ]);
 
         MacroableModel::addMacro(
             Post::class,

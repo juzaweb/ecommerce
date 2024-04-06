@@ -14,7 +14,7 @@
         #map {width: 100%;height: 245px;} .hidden-map{display:none;}
     </style>
 
-    {{ do_action('ecom.thankyou_page.btns.head', order) }}
+{#    {{ do_action('ecom.thankyou_page.btns.head', order) }}#}
 </head>
 <body class="body--custom-background-color ">
     <div context="checkout" define="{checkout: new Juzaweb.StoreCheckout(this,{})}" class="container">
@@ -241,7 +241,7 @@
                         </div>
 
                         <div class="order-success unprint">
-                            {{ do_action('ecom.thankyou_page.btns.left', order) }}
+{#                            {{ do_action('ecom.thankyou_page.btns.left', order) }}#}
                             <a href="/" class="btn btn-primary">
                                 {{ trans('ecom::content.continue_shopping') }}
                             </a>
@@ -251,7 +251,7 @@
                                     {{ trans('ecom::content.print') }}
                                 </div>
                             </a>
-                            {{ do_action('ecom.thankyou_page.btns.right') }}
+{#                            {{ do_action('ecom.thankyou_page.btns.right') }}#}
                         </div>
                     </div>
                 </div>
@@ -344,6 +344,6 @@
         }();
     </script>
 
-    {{ do_action('ecom.thankyou_page.btns.footer', order) }}
+{#    {{ do_action('ecom.thankyou_page.btns.footer', order) }}#}
 </body>
 </html>

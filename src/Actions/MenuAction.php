@@ -4,6 +4,8 @@ namespace Juzaweb\Ecommerce\Actions;
 
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
+use Juzaweb\Ecommerce\Http\Resources\OrderResource;
+use Juzaweb\Ecommerce\Models\Order;
 
 class MenuAction extends Action
 {
@@ -76,10 +78,19 @@ class MenuAction extends Action
             'ecommerce.orders',
             [
                 'title' => __('Orders'),
-                'contents' => 'ecom::frontend.profile.orders',
+                'contents' => 'ecom::frontend.profile.orders.index',
                 'icon' => 'shopping-cart',
                 'data' => [
-                    //
+                    'orders' => fn () => OrderResource::collection(
+                        Order::with(['paymentMethod'])
+                            ->where('user_id', auth()->id())
+                            ->paginate(10)
+                    ),
+                    'thank_page' => function () {
+                        $thanksPage = get_config('ecom_thanks_page');
+
+                        return $thanksPage ? get_page_url($thanksPage) : null;
+                    }
                 ]
             ]
         );

@@ -20,13 +20,13 @@
             'class' => 'load-countries',
         ]) }}
 
-        {{ Field::text('Postcode / ZIP', 'ecom_city', [
+        {{ Field::text('Postcode / ZIP', 'ecom_zipcode', [
             'value' => get_config('ecom_zipcode'),
         ]) }}
     </div>
 </div>
 
-<h5>General options</h5>
+{{--<h5>General options</h5>
 <div class="row">
     <div class="col-md-12">
         {{ Field::select('Selling location(s)', 'ecom_selling_locations', [
@@ -47,9 +47,9 @@
             ]
         ]) }}
     </div>
-</div>
+</div>--}}
 
-<h5>Currency options</h5>
+{{--<h5>Currency options</h5>
 <em>The following options affect how prices are displayed on the frontend.</em>
 
 <div class="row">
@@ -74,4 +74,4 @@
             'value' => get_config('ecom_number_of_decimals'),
         ]) }}
     </div>
-</div>
+</div>--}}

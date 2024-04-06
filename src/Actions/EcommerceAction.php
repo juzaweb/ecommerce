@@ -235,7 +235,7 @@ class EcommerceAction extends Action
         if ($checkoutPage == $page->id) {
             $cart = app(CartManagerContract::class)->find();
             if ($cart->isEmpty()) {
-                return redirect('/')->send();
+                redirect('/', 301)->send();
             }
 
             return 'ecom::frontend.checkout.index';
@@ -260,11 +260,14 @@ class EcommerceAction extends Action
         }
 
         if ($thanksPage == $page->id) {
-            $orderToken = request()->segment(2);
+            $orderToken = request()?->segment(2);
+
+            abort_if($orderToken === null, 404);
 
             $order = Order::findByToken($orderToken);
+            $order->load(['orderItems', 'paymentMethod']);
 
-            $params['order'] = (new OrderResource($order))->toArray(request());
+            $params['order'] = OrderResource::make($order)->toArray(request());
         }
 
         return $params;
