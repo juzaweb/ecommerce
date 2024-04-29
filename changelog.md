@@ -1,3 +1,10 @@
+### v1.0.5 
+* :memo: Update readme
+* :+1: Add test postgresql
+* :bug: Fix upgrade request
+* :+1: Show download profile
+* :+1: Download link in thank you page
+
 ### v1.0.4 
 * :+1: Download link in thank you page
 * :+1: Hash download link url
