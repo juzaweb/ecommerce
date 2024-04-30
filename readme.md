@@ -8,3 +8,5 @@ E-Commerce is a complete solution to secure your content and create a seamless e
 ### Features:
 - [x] Product management
 - [x] Payment methods
+- [ ] Shipping
+- [ ] Promotions
