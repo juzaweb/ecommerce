@@ -1,0 +1,11 @@
+{
+    "name": "Ecommerce",
+    "alias": "ecommerce",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Juzaweb\\Modules\\Ecommerce\\Providers\\ECommerceServiceProvider"
+    ],
+    "files": []
+}

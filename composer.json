@@ -1,34 +1,18 @@
 {
     "name": "juzaweb/ecommerce",
-    "homepage": "https://juzaweb.com",
-    "type": "juzaweb-plugin",
+    "homepage": "https://cms.juzaweb.com",
+    "type": "juzaweb-module",
     "license": "MIT",
-    "description": "Ecommerce plugin for website designed by Juzaweb",
-    "extra": {
-        "juzaweb": {
-            "providers": [
-                "Juzaweb\\Ecommerce\\Providers\\EcommerceServiceProvider"
-            ],
-            "name": "Ecommerces",
-            "domain": "ecom"
+    "description": "Ecommerce module for website designed by Juzaweb",
+    "authors": [
+        {
+            "name": "Juzaweb CMS",
+            "email": "admin@juzaweb.com"
         }
-    },
+    ],
     "require": {
         "league/omnipay": "^3",
         "omnipay/paypal": "^3.0",
         "omnipay/stripe": "^3.2"
-    },
-    "require-dev": {
-        "juzaweb/modules": "^1.0",
-        "juzaweb/dev-tool": "^1.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Juzaweb\\Ecommerce\\": "src/",
-            "Juzaweb\\Ecommerce\\Tests\\": "tests/"
-        },
-        "files": [
-            "helpers/helpers.php"
-        ]
     }
 }
