@@ -32,6 +32,8 @@ return new class extends Migration
                 $table->string('name');
                 $table->string('slug', 190)->unique();
                 $table->longText('content')->nullable();
+                $table->timestamps();
+
                 $table->unique(['product_id', 'locale']);
                 $table->foreign('product_id')
                     ->references('id')

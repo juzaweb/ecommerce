@@ -2,9 +2,10 @@
 
 namespace Juzaweb\Modules\Ecommerce\Providers;
 
+use Juzaweb\Core\Facades\Menu;
 use Juzaweb\Core\Providers\ServiceProvider;
 
-class EcommerceServiceProvider extends ServiceProvider
+class ECommerceServiceProvider extends ServiceProvider
 {
     /**
      * Boot the application events.
@@ -13,7 +14,11 @@ class EcommerceServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->booted(
+            function () {
+                $this->registerMenus();
+            }
+        );
     }
 
     /**
@@ -26,8 +31,19 @@ class EcommerceServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         $this->app->register(RouteServiceProvider::class);
+    }
+
+    protected function registerMenus(): void
+    {
+        Menu::make('e-commerce', __('E-Commerce'))
+            ->icon('fas fa-shopping-cart');
+        Menu::make('products', __('Products'))
+            ->parent('e-commerce');
+
+        Menu::make('product-categories', __('Categories'))
+            ->parent('e-commerce');
     }
 
     /**
@@ -38,9 +54,9 @@ class EcommerceServiceProvider extends ServiceProvider
     protected function registerConfig(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/config.php' => config_path('ecommerce.php'),
-        ], 'config');
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'ecommerce');
+            __DIR__ . '/../../config/ecommerce.php' => config_path('ecommerce.php'),
+        ], 'ecommerce-module-config');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/ecommerce.php', 'ecommerce');
     }
 
     /**

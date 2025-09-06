@@ -64,7 +64,7 @@ return new class extends Migration
 
                 $table->foreign('product_id')
                     ->references('id')
-                    ->on('posts')
+                    ->on('products')
                     ->onDelete('set null');
 
                 $table->foreign('variant_id')
@@ -82,6 +82,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('order_items');
         Schema::dropIfExists('orders');
     }
 };

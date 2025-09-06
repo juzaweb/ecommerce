@@ -30,7 +30,7 @@ return new class extends Migration
 
                 $table->foreign('product_id')
                     ->references('id')
-                    ->on('posts')
+                    ->on('products')
                     ->onDelete('cascade');
             }
         );
@@ -44,7 +44,7 @@ return new class extends Migration
 
                 $table->string('title');
                 $table->text('description')->nullable();
-
+                $table->timestamps();
                 $table->unique(['product_variant_id', 'locale']);
                 $table->foreign('product_variant_id')
                     ->references('id')
@@ -61,6 +61,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('product_variant_translations');
         Schema::dropIfExists('product_variants');
     }
 };

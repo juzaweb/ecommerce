@@ -30,9 +30,27 @@ return new class extends Migration
                 $table->string('name');
                 $table->string('slug', 190)->unique();
                 $table->longText('description')->nullable();
-
+                $table->timestamps();
                 $table->unique(['product_category_id', 'locale']);
                 $table->foreign('product_category_id')
+                    ->references('id')
+                    ->on('product_categories')
+                    ->onDelete('cascade');
+            }
+        );
+
+        Schema::create(
+            'product_category',
+            function (Blueprint $table) {
+                $table->uuid('product_id');
+                $table->uuid('category_id');
+
+                $table->primary(['product_id', 'category_id']);
+                $table->foreign('product_id')
+                    ->references('id')
+                    ->on('products')
+                    ->onDelete('cascade');
+                $table->foreign('category_id')
                     ->references('id')
                     ->on('product_categories')
                     ->onDelete('cascade');
@@ -47,6 +65,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('product_category');
         Schema::dropIfExists('product_category_translations');
         Schema::dropIfExists('product_categories');
     }
