@@ -14,5 +14,10 @@
         "league/omnipay": "^3",
         "omnipay/paypal": "^3.0",
         "omnipay/stripe": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Juzaweb\\Modules\\Ecommerce\\": "src/"
+        }
     }
 }
