@@ -12,6 +12,7 @@ namespace Juzaweb\Modules\Ecommerce\Http\Controllers;
 
 use Juzaweb\Core\Facades\Breadcrumb;
 use Juzaweb\Core\Http\Controllers\AdminController;
+use Juzaweb\Core\Http\Requests\BulkActionsRequest;
 use Juzaweb\Modules\Ecommerce\Http\DataTables\CategoriesDataTable;
 use Juzaweb\Modules\Ecommerce\Http\Requests\ProductCategoryRequest;
 use Juzaweb\Modules\Ecommerce\Models\ProductCategory;
@@ -55,12 +56,14 @@ class CategoryController extends AdminController
         $model = ProductCategory::findOrFail($id);
         $locale = $this->getFormLanguage();
 
+        $model->setDefaultLocale($locale);
+
         return view(
             'ecommerce::category.form',
             [
                 'locale' => $locale,
                 'model' => $model,
-                'action' => action([static::class, 'store']),
+                'action' => action([static::class, 'update'], ['id' => $id]),
             ]
         );
     }
@@ -73,6 +76,36 @@ class CategoryController extends AdminController
             [
                 'message' => __('Category created successfully'),
                 'redirect' => action([static::class, 'index']),
+            ]
+        );
+    }
+
+    public function update(ProductCategoryRequest $request, string $id)
+    {
+        $category = ProductCategory::findOrFail($id);
+
+        $category->update($request->validated());
+
+        return $this->success(
+            [
+                'message' => __('Category updated successfully'),
+                'redirect' => action([static::class, 'index']),
+            ]
+        );
+    }
+
+    public function bulk(BulkActionsRequest $request)
+    {
+        $action = $request->input('action');
+        $ids = $request->input('ids', []);
+
+        if ($action == 'delete') {
+            ProductCategory::destroy($ids);
+        }
+
+        return $this->success(
+            [
+                'message' => __('Bulk action performed successfully'),
             ]
         );
     }

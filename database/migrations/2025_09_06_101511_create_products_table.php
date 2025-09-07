@@ -18,6 +18,7 @@ return new class extends Migration
             function (Blueprint $table) {
                 $table->uuid('id')->primary();
                 $table->string('status', 20)->default('draft')->index();
+                $table->boolean('inventory')->default(false)->index();
                 $table->timestamps();
                 $table->softDeletes();
             }

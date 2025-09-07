@@ -19,11 +19,13 @@ return new class extends Migration
                 $table->uuid('id')->primary();
                 $table->string('sku_code', 100)->nullable()->index();
                 $table->string('barcode', 100)->nullable()->index();
-                $table->decimal('price', 15, 2)->nullable();
-                $table->decimal('compare_price', 15, 2)->nullable();
+                $table->decimal('price', 18, 2)->nullable();
+                $table->decimal('compare_price', 18, 2)->nullable();
+                $table->integer('stock_quantity')->default(0)->index();
 
-                //Type: [default, downloadable, virtual]
+                // Type: [default, virtual]
                 $table->string('type', 20)->default('default');
+                $table->boolean('downloadable')->default(false);
                 $table->uuid('product_id')->index();
                 $table->timestamps();
                 $table->softDeletes();

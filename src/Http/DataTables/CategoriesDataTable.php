@@ -54,7 +54,7 @@ class CategoriesDataTable extends DataTable
     public function actions(Model $model): array
     {
         return [
-            Action::edit(admin_url("products/{$model->id}/edit"))
+            Action::edit(admin_url("product-categories/{$model->id}/edit"))
                 ->can('product-categories.edit'),
             Action::delete()
                 ->can('product-categories.delete'),

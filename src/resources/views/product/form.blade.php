@@ -27,9 +27,50 @@
                     <div class="card-body">
                         {{ Field::text($model, "{$locale}[name]", ['id' => 'name', 'value' => $model->name, 'label' => __('Name')]) }}
 
-                        {{ Field::editor($model, "{$locale}[content]", ['value' => $model->description, 'label' => __('Content')]) }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ Field::text($model, "price", ['value' => $variant->price, 'label' => __('Price')]) }}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ Field::text($model, "compare_price", ['value' => $variant->compare_price, 'label' => __('Compare price')]) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ Field::text($model, "sku_code", ['value' => $variant->sku_code, 'label' => __('Sku code')]) }}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ Field::text($model, "barcode", ['value' => $variant->barcode, 'label' => __('Barcode')]) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                {{ Field::checkbox($model, 'inventory', ['value' => $model->inventory]) }}
+                            </div>
+
+                            <div class="col-md-8">
+                                {{ Field::text($model, 'stock_quantity', ['value' => $variant->stock_quantity, 'label' => __('Stock quantity')]) }}
+                            </div>
+                        </div>
+
+                        {{ Field::editor($model, "{$locale}[content]", ['value' => $model->content, 'label' => __('Content')]) }}
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        {{ Field::select($model, 'type', ['value' => $variant->type])
+                            ->dropDownList(\Juzaweb\Modules\Ecommerce\Enums\VariantType::toArray()) }}
+
+                        {{ Field::checkbox($model, 'downloadable', ['value' => $variant->downloadable]) }}
+                    </div>
+                </div>
+
+                <x-seo-meta :model="$model" :locale="$locale" />
             </div>
 
             <div class="col-md-3">
@@ -37,7 +78,16 @@
 
                 <div class="card">
                     <div class="card-body">
+                        {{ Field::select($model, 'status', ['value' => $model->status])
+                            ->dropDownList(\Juzaweb\Modules\Ecommerce\Enums\ProductStatus::toArray()) }}
+                    </div>
+                </div>
 
+                <div class="card">
+                    <div class="card-body">
+                        {{ Field::image(__('Thumbnail'), 'thumbnail', [
+                        'value' => $model->getFirstMedia('thumbnail')->path
+                        ]) }}
                     </div>
                 </div>
             </div>
