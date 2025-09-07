@@ -12,8 +12,8 @@ namespace Juzaweb\Modules\Ecommerce\Enums;
 
 enum ProductStatus: string
 {
-    case DRAFT = 'draft';
     case PUBLISHED = 'published';
+    case DRAFT = 'draft';
     case ARCHIVED = 'archived';
 
     public static function toArray(): array

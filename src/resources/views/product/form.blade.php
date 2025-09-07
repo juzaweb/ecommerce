@@ -86,7 +86,7 @@
                 <div class="card">
                     <div class="card-body">
                         {{ Field::image(__('Thumbnail'), 'thumbnail', [
-                        'value' => $model->getFirstMedia('thumbnail')->path
+                        'value' => $model->getFirstMedia('thumbnail')?->path
                         ]) }}
                     </div>
                 </div>
