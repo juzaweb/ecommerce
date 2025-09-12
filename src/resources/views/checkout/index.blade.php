@@ -117,7 +117,7 @@
                         <div class="form-group m0" bind-show="!existCode || !applyWithPromotion || code == null || !code.length">
                             <div class="field__input-btn-wrapper">
                                 <div class="field__input-wrapper">
-                                    <input bind="code" name="code" type="text" class="form-control discount_code" placeholder="{{ trans('ecommerce::translation.enter_discount_code') }}" value="" id="checkout_reduction_code"/>
+                                    <input bind="code" name="code" type="text" class="form-control discount_code" placeholder="{{ trans('ecommerce::translation.discount_code') }}" value="" id="checkout_reduction_code"/>
                                 </div>
                                 <button bind-event-click="reduction_code = false, caculateShippingFee('')" class="btn btn-primary event-voucher-apply" type="button">{{ trans('ecommerce::translation.apply') }}</button>
                             </div>
@@ -232,7 +232,7 @@
                                             <span class="field__label" bind-event-click="handleClick(this)">
                                                 {{ trans('ecommerce::translation.email') }}
                                             </span>
-                                            <input name="email" type="email" {% if guest %} bind-event-change="changeEmail()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" pattern="^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" {% endif %} bind="email" class="field__input form-control" id="_email" data-error="{{ trans('ecommerce::translation.email_is_malformed') }}" required value="{{ $user->email }}" {% if auth %} disabled {% endif %} />
+                                            <input name="email" type="email" {% if guest %} bind-event-change="changeEmail()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" pattern="^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" {% endif %} bind="email" class="field__input form-control" id="_email" data-error="{{ trans('ecommerce::translation.email_is_malformed') }}" required value="{{ $user->email }}" @auth disabled @endauth />
                                         </label>
                                     </div>
                                     <div class="help-block with-errors">
@@ -246,7 +246,7 @@
                                                     <span class="field__label" bind-event-click="handleClick(this)">
                                                         {{ trans('ecommerce::translation.full_name') }}
                                                     </span>
-                                                <input name="name" type="text" bind-event-change="saveAbandoned()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_last_name" data-error="{{ trans('ecommerce::translation.please_enter_full_name') }}" required bind="billing_address.full_name" autocomplete="off" value="{{ $user->name }}" {% if auth %} disabled {% endif %} />
+                                                <input name="name" type="text" bind-event-change="saveAbandoned()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_last_name" data-error="{{ trans('ecommerce::translation.please_enter_full_name') }}" required bind="billing_address.full_name" autocomplete="off" value="{{ $user->name }}" @auth disabled @endauth />
                                             </div>
                                             <div class="help-block with-errors"></div>
                                         </div>
@@ -256,7 +256,7 @@
                                                 <span class="field__label" bind-event-click="handleClick(this)">
                                                     {{ trans('ecommerce::translation.phone') }}
                                                 </span>
-                                                <input name="phone" bind-event-change="saveAbandoned()" type="tel" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_phone" data-error="{{ trans('ecommerce::translation.please_enter_full_phone') }}" pattern="^([0-9,\+,\-,\(,\),\.]{8,20})$" bind="billing_address.phone" value="{{ $user->phone }}" {% if auth %} disabled {% endif %} />
+                                                <input name="phone" bind-event-change="saveAbandoned()" type="tel" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_phone" data-error="{{ trans('ecommerce::translation.please_enter_full_phone') }}" pattern="^([0-9,\+,\-,\(,\),\.]{8,20})$" bind="billing_address.phone" value="{{ $user->phone }}" />
                                             </div>
                                             <div class="help-block with-errors"></div>
                                         </div>

@@ -20,5 +20,13 @@ return [
     'information' => 'Information',
     'billing_details' => 'Billing details',
     'payment' => 'Payment',
+    'total_price' => 'Total price',
+    'shipping_to_other_address' => 'Shipping to other address',
+    'back_to_cart' => 'Back to cart',
+    'apply' => 'Apply',
+    'discount_code' => 'Discount code',
+    'email' => 'Email',
+    'full_name' => 'Full name',
+    'phone' => 'Phone',
 ];
  
