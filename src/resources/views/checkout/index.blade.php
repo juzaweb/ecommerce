@@ -4,17 +4,22 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ title }} - {{ trans('ecom::content.payment_order') }}" />
-    <title>{{ title }} - {{ trans('ecom::content.payment_order') }}</title>
+    <meta name="description" content="{{ __('Checkout') }} - {{ setting('sitename') }}" />
+    <title>{{ __('Checkout') }} - {{ setting('sitename') }}</title>
     <link rel="shortcut icon" href="{{ upload_url(config('icon')) }}" type="image/x-icon" />
 
-    <link rel="stylesheet" href="{{ asset('jw-styles/plugins/juzaweb/ecommerce/assets/css/checkout.min.css') }}">
+    <link rel="stylesheet" href="https://cms.juzaweb.com/jw-styles/plugins/juzaweb/ecommerce/assets/css/checkout.min.css">
 
-    <script> var Juzaweb = Juzaweb || {}; Juzaweb.store = ''; Juzaweb.theme = {"id":606449,"role":"main","name":"{{ shop_name }}"}; Juzaweb.template = ''; </script>
+    <script>
+        var Juzaweb = Juzaweb || {};
+        Juzaweb.store = '';
+        Juzaweb.theme = {"id":606449,"role":"main","name":"{{ setting('sitename') }}"};
+        Juzaweb.template = '';
+    </script>
 
     <script type="text/javascript">if (typeof Juzaweb == 'undefined') { Juzaweb = {}; }
         Juzaweb.Checkout = {};
-        Juzaweb.Checkout.token = "{{ cart.token }}";
+        Juzaweb.Checkout.token = "{{ $cart->id }}";
         Juzaweb.Checkout.apiHost = "";
     </script>
 </head>
@@ -25,7 +30,7 @@
 
             <h1 class="shop__name">
                 <a href="/">
-                    {{ title }}
+                    {{ __('Checkout') }}
                 </a>
             </h1>
 
@@ -35,17 +40,17 @@
 <button class="order-summary-toggle" bind-event-click="Juzaweb.StoreCheckout.toggleOrderSummary(this)">
     <div class="wrap">
         <h2>
-            <label class="control-label">{{ trans('ecom::content.order') }}</label>
+            <label class="control-label">{{ trans('ecommerce::translation.order') }}</label>
             <label class="control-label hidden-small-device">
-                ({{ cart.item_count }} {{ trans('ecom::content.products') }})
+                ({{ $cart->items->count() }} {{ trans('ecommerce::translation.products') }})
             </label>
             <label class="control-label visible-small-device inline">
-                ({{ cart.item_count }})
+                ({{ $cart->items->count() }})
             </label>
         </h2>
 
         <a class="underline-none expandable pull-right" href="javascript:void(0)">
-            {{ trans('ecom::content.view_detail') }}
+            {{ trans('ecommerce::translation.view_detail') }}
         </a>
     </div>
 </button>
@@ -55,18 +60,18 @@
 </div>
 <form
         method="post"
-        action="{{ route('ajax', ['checkout']) }}"
+        action="{{ route('checkout', [$cart->id]) }}"
         data-toggle="validator"
         class="content stateful-form formCheckout"
 >
 
     {{ csrf_field() }}
 
-    <div class="wrap" context="checkout" define='{checkout: new Juzaweb.StoreCheckout(this,{ token: "{{ cart.token }}", email: "{{ user.email }}", totalOrderItemPrice: "{{ cart.total_price|default('$0') }}", shippingFee: 0, freeShipping: false, requiresShipping: {{ requires_shipping ? 'true' : 'false' }}, existCode: false, code: "", discount: 0, settingLanguage: "vi", moneyFormat: "", discountLabel: "{{ trans('ecom::content.free') }}", districtPolicy: "optional", wardPolicy: "hidden", district: "", ward: "", province:"", otherAddress: false, shippingId: 0, shippingMethods: {}, customerAddressId: 0, reductionCode: "" })}'>
+    <div class="wrap" context="checkout" define='{checkout: new Juzaweb.StoreCheckout(this,{ token: "{{ $cart->id }}", email: "{{ $user?->email }}", totalOrderItemPrice: "${{ $cart->items->sum(fn ($item) => $item->variant->price * $item->quantity) }}", shippingFee: 0, freeShipping: false, requiresShipping: false, existCode: false, code: "", discount: 0, settingLanguage: "vi", moneyFormat: "", discountLabel: "{{ trans('ecommerce::translation.free') }}", districtPolicy: "optional", wardPolicy: "hidden", district: "", ward: "", province:"", otherAddress: false, shippingId: 0, shippingMethods: {}, customerAddressId: 0, reductionCode: "" })}'>
         <div class='sidebar '>
             <div class="sidebar_header">
                 <h2>
-                    <label class="control-label">{{ trans('ecom::content.order') }} ({{ cart.item_count }} {{ trans('ecom::content.products') }})</label>
+                    <label class="control-label">{{ trans('ecommerce::translation.order') }} ({{ $cart->items->count() }} {{ trans('ecommerce::translation.products') }})</label>
                 </h2>
                 <hr class="full_width"/>
             </div>
@@ -76,31 +81,31 @@
                         <div class="summary-product-list">
                             <table class="product-table">
                                 <tbody>
-                                {% for item in cart.items %}
-                                <tr class="product product-has-image clearfix">
-                                    <td>
-                                        <div class="product-thumbnail">
-                                            <div class="product-thumbnail__wrapper">
-                                                <img src="{{ item.thumbnail }}" class="product-thumbnail__image" alt="" />
-                                            </div>
-                                            <span class="product-thumbnail__quantity" aria-hidden="true">{{ item.quantity }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="product-info">
+                                    @foreach($cart->items as $item)
+                                        <tr class="product product-has-image clearfix">
+                                            <td>
+                                                <div class="product-thumbnail">
+                                                    <div class="product-thumbnail__wrapper">
+                                                        <img src="{{ $item->thumbnail }}" class="product-thumbnail__image" alt="" />
+                                                    </div>
+                                                    <span class="product-thumbnail__quantity" aria-hidden="true">{{ $item->quantity }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="product-info">
                                                 <span class="product-info-name">
-                                                    {{ item.title }}
+                                                    {{ $item->variant->product->name }}
                                                 </span>
-                                    </td>
+                                            </td>
 
-                                    <td class="product-price text-right">
-                                        {{ item.line_price }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
+                                            <td class="product-price text-right">
+                                                {{ $item->line_price }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                             <div class="order-summary__scroll-indicator">
-                                {{ trans('ecom::content.scroll_mouse_to_view_more') }}
+                                {{ trans('ecommerce::translation.scroll_mouse_to_view_more') }}
                                 <i class="fa fa-long-arrow-down" aria-hidden="true"></i>
                             </div>
                         </div>
@@ -112,9 +117,9 @@
                         <div class="form-group m0" bind-show="!existCode || !applyWithPromotion || code == null || !code.length">
                             <div class="field__input-btn-wrapper">
                                 <div class="field__input-wrapper">
-                                    <input bind="code" name="code" type="text" class="form-control discount_code" placeholder="{{ trans('ecom::content.enter_discount_code') }}" value="" id="checkout_reduction_code"/>
+                                    <input bind="code" name="code" type="text" class="form-control discount_code" placeholder="{{ trans('ecommerce::translation.enter_discount_code') }}" value="" id="checkout_reduction_code"/>
                                 </div>
-                                <button bind-event-click="reduction_code = false, caculateShippingFee('')" class="btn btn-primary event-voucher-apply" type="button">{{ trans('ecom::content.apply') }}</button>
+                                <button bind-event-click="reduction_code = false, caculateShippingFee('')" class="btn btn-primary event-voucher-apply" type="button">{{ trans('ecommerce::translation.apply') }}</button>
                             </div>
                         </div>
 
@@ -126,13 +131,13 @@
                             <div bind="code" class="pull-left applied-discount-code">
 
                             </div>
-                            <div bind="(discountShipping && freeShipping) ? '{{ trans('ecom::content.free') }}' : discount" class="pull-right">
+                            <div bind="(discountShipping && freeShipping) ? '{{ trans('ecommerce::translation.free') }}' : discount" class="pull-right">
                                 0
                             </div>
                             <input bind-event-click="removeCode('')" class="btn btn-delete" type="button" value="×" name="commit">
                         </div>
                         <div class="error mt10 hide" bind-show="inValidCode">
-                            {{ trans('ecom::content.discount_code_is_not_valid') }}
+                            {{ trans('ecommerce::translation.discount_code_is_not_valid') }}
                         </div>
                         <div class="error mt10 hide" bind-show="!applyWithPromotion && existCode">
 
@@ -144,29 +149,29 @@
                     <div class="summary-section border-top-none--mobile">
                         <div class="total-line total-line-subtotal clearfix">
                             <span class="total-line-name pull-left">
-                                {{ trans('ecom::content.total_price') }}
+                                {{ trans('ecommerce::translation.total_price') }}
                             </span>
 
                             <span bind="totalOrderItemPrice" class="total-line-subprice pull-right">
-                                {{ cart.total_line_price }}
+                                {{ $cart->items->sum(fn ($item) => $item->variant->price * $item->quantity) }}
                             </span>
                         </div>
 
                         <div class="total-line total-line-shipping clearfix" bind-show="requiresShipping">
                             <span class="total-line-name pull-left">
-                                {{ trans('ecom::content.shipping_fee') }}
+                                {{ trans('ecommerce::translation.shipping_fee') }}
                             </span>
-                            <span bind="shippingFee !=  0 ? shippingFee : ((requiresShipping && shippingMethods.length == 0) ? 'This area does not support transportation': '{{ trans('ecom::content.free') }}')" class="total-line-shipping pull-right" >
-                                {{ trans('ecom::content.free') }}
+                            <span bind="shippingFee !=  0 ? shippingFee : ((requiresShipping && shippingMethods.length == 0) ? 'This area does not support transportation': '{{ trans('ecommerce::translation.free') }}')" class="total-line-shipping pull-right" >
+                                {{ trans('ecommerce::translation.free') }}
                             </span>
                         </div>
 
                         <div class="total-line total-line-total clearfix">
                             <span class="total-line-name pull-left">
-                                {{ trans('ecom::content.total') }}
+                                {{ trans('ecommerce::translation.total') }}
                             </span>
                             <span bind="totalPrice" class="total-line-price pull-right">
-                                {{ cart.total_price }}
+                                {{ $cart->items->sum(fn ($item) => $item->variant->price * $item->quantity) }}
                             </span>
                         </div>
                     </div>
@@ -175,9 +180,9 @@
                     <div class="field__input-btn-wrapper mt10">
                         <a class="previous-link" href="/cart">
                             <i class="fa fa-angle-left fa-lg" aria-hidden="true"></i>
-                            <span>{{ trans('ecom::content.back_to_cart') }}</span>
+                            <span>{{ trans('ecommerce::translation.back_to_cart') }}</span>
                         </a>
-                        <input class="btn btn-primary btn-checkout" data-loading-text="{{ trans('ecom::content.please_wait') }}" type="button" bind-event-click="paymentCheckout('AIzaSyAjQYbV19v7UMDVk0cDZ54yKh3OP1hQhbk;AIzaSyCLd-YkfOzBXlNGfS_FNLnpolyME1tRAJI;AIzaSyDdvilzaJlb50t2IRC3PrfSb1lNzf6n3pQ')" value="{{ trans('ecom::content.order')|upper }}" />
+                        <input class="btn btn-primary btn-checkout" data-loading-text="{{ trans('ecommerce::translation.please_wait') }}" type="button" bind-event-click="paymentCheckout('AIzaSyAjQYbV19v7UMDVk0cDZ54yKh3OP1hQhbk;AIzaSyCLd-YkfOzBXlNGfS_FNLnpolyME1tRAJI;AIzaSyDdvilzaJlb50t2IRC3PrfSb1lNzf6n3pQ')" value="{{ strtoupper(trans('ecommerce::translation.order')) }}" />
                     </div>
                 </div>
                 <div class="form-group has-error">
@@ -208,15 +213,15 @@
                                 <div class="layout-flex layout-flex--wrap">
                                     <h2 class="section__title layout-flex__item layout-flex__item--stretch">
                                         <i class="fa fa-id-card-o fa-lg section__title--icon hidden-md hidden-lg" aria-hidden="true"></i>
-                                        <label class="control-label">{{ trans('ecom::content.information') }}</label>
+                                        <label class="control-label">{{ trans('ecommerce::translation.information') }}</label>
                                     </h2>
 
-                                    {% if guest %}
-                                    <a class="layout-flex__item section__title--link" href="{{ route('login') }}?redirect=/{{ url().current() }}">
+                                    @guest
+                                    <a class="layout-flex__item section__title--link" href="{{ route('login') }}?redirect=/{{ url()->current() }}">
                                         <i class="fa fa-user-circle-o fa-lg" aria-hidden="true"></i>
-                                        {{ trans('ecom::content.login') }}
+                                        {{ trans('ecommerce::translation.login') }}
                                     </a>
-                                    {% endif %}
+                                    @endguest
                                 </div>
                             </div>
 
@@ -225,9 +230,9 @@
                                     <div>
                                         <label class="field__input-wrapper" bind-class="{ 'js-is-filled': email }">
                                             <span class="field__label" bind-event-click="handleClick(this)">
-                                                {{ trans('ecom::content.email') }}
+                                                {{ trans('ecommerce::translation.email') }}
                                             </span>
-                                            <input name="email" type="email" {% if guest %} bind-event-change="changeEmail()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" pattern="^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" {% endif %} bind="email" class="field__input form-control" id="_email" data-error="{{ trans('ecom::content.email_is_malformed') }}" required value="{{ user.email }}" {% if auth %} disabled {% endif %} />
+                                            <input name="email" type="email" {% if guest %} bind-event-change="changeEmail()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" pattern="^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" {% endif %} bind="email" class="field__input form-control" id="_email" data-error="{{ trans('ecommerce::translation.email_is_malformed') }}" required value="{{ $user->email }}" {% if auth %} disabled {% endif %} />
                                         </label>
                                     </div>
                                     <div class="help-block with-errors">
@@ -239,9 +244,9 @@
                                         <div class="form-group">
                                             <div class="field__input-wrapper" bind-class="{ 'js-is-filled': billing_address.full_name }">
                                                     <span class="field__label" bind-event-click="handleClick(this)">
-                                                        {{ trans('ecom::content.full_name') }}
+                                                        {{ trans('ecommerce::translation.full_name') }}
                                                     </span>
-                                                <input name="name" type="text" bind-event-change="saveAbandoned()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_last_name" data-error="{{ trans('ecom::content.please_enter_full_name') }}" required bind="billing_address.full_name" autocomplete="off" value="{{ user.name }}" {% if auth %} disabled {% endif %} />
+                                                <input name="name" type="text" bind-event-change="saveAbandoned()" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_last_name" data-error="{{ trans('ecommerce::translation.please_enter_full_name') }}" required bind="billing_address.full_name" autocomplete="off" value="{{ $user->name }}" {% if auth %} disabled {% endif %} />
                                             </div>
                                             <div class="help-block with-errors"></div>
                                         </div>
@@ -249,9 +254,9 @@
                                         <div class="form-group">
                                             <div class="field__input-wrapper" bind-class="{ 'js-is-filled': billing_address.phone }">
                                                 <span class="field__label" bind-event-click="handleClick(this)">
-                                                    {{ trans('ecom::content.phone') }}
+                                                    {{ trans('ecommerce::translation.phone') }}
                                                 </span>
-                                                <input name="phone" bind-event-change="saveAbandoned()" type="tel" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_phone" data-error="{{ trans('ecom::content.please_enter_full_phone') }}" pattern="^([0-9,\+,\-,\(,\),\.]{8,20})$" bind="billing_address.phone" value="{{ user.phone }}" {% if auth %} disabled {% endif %} />
+                                                <input name="phone" bind-event-change="saveAbandoned()" type="tel" bind-event-focus="handleFocus(this)" bind-event-blur="handleFieldBlur(this)" class="field__input form-control" id="_billing_address_phone" data-error="{{ trans('ecommerce::translation.please_enter_full_phone') }}" pattern="^([0-9,\+,\-,\(,\),\.]{8,20})$" bind="billing_address.phone" value="{{ $user->phone }}" {% if auth %} disabled {% endif %} />
                                             </div>
                                             <div class="help-block with-errors"></div>
                                         </div>
@@ -273,7 +278,7 @@
                                     <div>
                                         <label class="field__input-wrapper" bind-class="{'js-is-filled': note}" style="border: none">
 												<span class="field__label" bind-event-click="handleClick(this)" >
-													{{ trans('ecom::content.note') }}
+													{{ trans('ecommerce::translation.note') }}
 												</span>
                                             <textarea name="notes"
                                                       bind-event-change="saveAbandoned()"
@@ -289,11 +294,11 @@
                     </div>
                     <div class="col-md-6 col-lg-6">
 
-                        {#<div class="section shipping-method hide" bind-show="shippingMethodsLoading || shippingMethods.length > 0">
+                        {{--<div class="section shipping-method hide" bind-show="shippingMethodsLoading || shippingMethods.length > 0">
                             <div class="section__header">
                                 <h2 class="section__title">
                                     <i class="fa fa-truck fa-lg section__title--icon hidden-md hidden-lg" aria-hidden="true"></i>
-                                    <label class="control-label">{{ trans('ecom::content.shipping') }}</label>
+                                    <label class="control-label">{{ trans('ecommerce::translation.shipping') }}</label>
                                 </h2>
                             </div>
                             <div class="section__content">
@@ -308,13 +313,13 @@
 
                                 </div>
                             </div>
-                        </div>#}
+                        </div>--}}
 
                         <div class="section payment-methods" bind-class="{'p0--desktop': shippingMethods.length == 0}">
                             <div class="section__header">
                                 <h2 class="section__title">
                                     <i class="fa fa-credit-card fa-lg section__title--icon hidden-md hidden-lg" aria-hidden="true"></i>
-                                    <label class="control-label">{{ trans('ecom::content.payment') }}</label>
+                                    <label class="control-label">{{ trans('ecommerce::translation.payment') }}</label>
                                 </h2>
                             </div>
                             <div class="section__content">
@@ -323,12 +328,12 @@
                         </div>
                         <div class="section hidden-md hidden-lg">
                             <div class="form-group clearfix m0">
-                                <input class="btn btn-primary btn-checkout" data-loading-text="Đang xử lý" type="button" bind-event-click="paymentCheckout('AIzaSyAjQYbV19v7UMDVk0cDZ54yKh3OP1hQhbk;AIzaSyCLd-YkfOzBXlNGfS_FNLnpolyME1tRAJI;AIzaSyDdvilzaJlb50t2IRC3PrfSb1lNzf6n3pQ')" value="{{ trans('ecom::content.order') }}" />
+                                <input class="btn btn-primary btn-checkout" data-loading-text="Đang xử lý" type="button" bind-event-click="paymentCheckout('AIzaSyAjQYbV19v7UMDVk0cDZ54yKh3OP1hQhbk;AIzaSyCLd-YkfOzBXlNGfS_FNLnpolyME1tRAJI;AIzaSyDdvilzaJlb50t2IRC3PrfSb1lNzf6n3pQ')" value="{{ trans('ecommerce::translation.order') }}" />
                             </div>
                             <div class="text-center mt20">
                                 <a class="previous-link" href="/cart">
                                     <i class="fa fa-angle-left fa-lg" aria-hidden="true"></i>
-                                    <span>{{ trans('ecom::content.back_to_cart') }}</span>
+                                    <span>{{ trans('ecommerce::translation.back_to_cart') }}</span>
                                 </a>
                             </div>
                         </div>
@@ -345,7 +350,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                            <h4 class="modal-title">{{ trans('ecom::content.refund_policy') }}</h4>
+                            <h4 class="modal-title">{{ trans('ecommerce::translation.refund_policy') }}</h4>
                         </div>
                         <div class="modal-body">
                             <pre></pre>
@@ -358,7 +363,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                            <h4 class="modal-title">{{ trans('ecom::content.privacy_policy') }}</h4>
+                            <h4 class="modal-title">{{ trans('ecommerce::translation.privacy_policy') }}</h4>
                         </div>
                         <div class="modal-body">
                             <pre></pre>
@@ -371,7 +376,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                            <h4 class="modal-title">{{ trans('ecom::content.terms_of_service') }}</h4>
+                            <h4 class="modal-title">{{ trans('ecommerce::translation.terms_of_service') }}</h4>
                         </div>
                         <div class="modal-body">
                             <pre></pre>
@@ -388,9 +393,9 @@
         <symbol id="next-spinner"><svg preserveAspectRatio="xMinYMin"><circle class="next-spinner__ring" cx="50%" cy="50%" r="45%"></circle></svg></symbol>
     </svg>
 </div>
-<script>var code_langs = {'choose_province': '{{ trans('ecom::content.choose_province') }}'};</script>
+<script>var code_langs = {'choose_province': '{{ trans('ecommerce::translation.choose_province') }}'};</script>
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
-<script src="{{ asset('jw-styles/plugins/juzaweb/ecommerce/assets/js/checkout.min.js') }}" type="text/javascript"></script>
+<script src="https://cms.juzaweb.com/jw-styles/plugins/juzaweb/ecommerce/assets/js/checkout.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(document).ajaxStart(function () {
@@ -412,8 +417,8 @@
             dropdownCssClass: 'field__input',
             dropdownParent: $('.main_content'),
             language: {
-                noResults: function () { return "{{ trans('ecom::content.no_results') }}" },
-                searching: function () { return "{{ trans('ecom::content.searching') }}…" }
+                noResults: function () { return "{{ trans('ecommerce::translation.no_results') }}" },
+                searching: function () { return "{{ trans('ecommerce::translation.searching') }}…" }
             }
         });
 

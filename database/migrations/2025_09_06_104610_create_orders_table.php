@@ -32,11 +32,15 @@ return new class extends Migration
                 $table->unsignedBigInteger('payment_method_id')->nullable()->index();
                 $table->string('payment_method_name', 250);
                 $table->text('notes')->nullable();
-                $table->tinyInteger('other_address')->default(0);
-                $table->string('payment_status')->default('pending')->comment('pending');
-                $table->string('delivery_status')->default('pending')->comment('pending');
-                $table->uuid('user_id')->nullable()->index();
+                $table->boolean('other_address')->default(0);
+                $table->string('payment_status', 10)->default('pending')->comment('pending');
+                $table->string('delivery_status', 10)->default('pending')->comment('pending');
+                $table->uuid('user_id')->index();
                 $table->timestamps();
+
+                $table->foreign('user_id')
+                    ->references('id')
+                    ->on('users');
             }
         );
 

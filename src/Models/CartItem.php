@@ -29,6 +29,10 @@ class CartItem extends Model
         'quantity' => 'integer',
     ];
 
+    protected $appends = [
+        'line_price',
+    ];
+
     public function cart()
     {
         return $this->belongsTo(Cart::class, 'cart_id', 'id');
@@ -37,5 +41,14 @@ class CartItem extends Model
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id', 'id');
+    }
+
+    public function getLinePriceAttribute(): float
+    {
+        if ($this->variant) {
+            return $this->variant->price * $this->quantity;
+        }
+
+        return 0;
     }
 }

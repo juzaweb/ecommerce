@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Modules\Ecommerce\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Core\Http\Controllers\ThemeController;
@@ -32,8 +33,11 @@ class CartController extends ThemeController
                     ]);
                 }
 
-                $cart->items()->create(
-                    $request->only(['variant_id', 'quantity'])
+                $cart->items()->updateOrCreate(
+                    [
+                        'variant_id' => $request->input('variant_id'),
+                    ],
+                    $request->only(['quantity'])
                 );
 
                 return $cart;
@@ -46,6 +50,33 @@ class CartController extends ThemeController
             [
                 'message' => __('Product added to cart successfully'),
                 'cart_id' => $cart->id,
+            ]
+        );
+    }
+
+    public function remove(Request $request, string $itemId)
+    {
+        $cartId = $request->cookie('cart_id');
+
+        $cart = Cart::where('id', $cartId)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$cart) {
+            return $this->error(__('Cart not found'));
+        }
+
+        $item = $cart->items()->where('id', $itemId)->first();
+
+        if (!$item) {
+            return $this->error(__('Item not found in cart'));
+        }
+
+        $item->delete();
+
+        return $this->success(
+            [
+                'message' => __('Item removed from cart successfully'),
             ]
         );
     }
