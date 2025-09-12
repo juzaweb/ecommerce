@@ -13,6 +13,7 @@ namespace Juzaweb\Modules\Ecommerce\Enums;
 enum ProductStatus: string
 {
     case PUBLISHED = 'published';
+    case PRIVATED = 'private';
     case DRAFT = 'draft';
     case ARCHIVED = 'archived';
 
@@ -29,15 +30,7 @@ enum ProductStatus: string
             self::DRAFT => __('Draft'),
             self::PUBLISHED => __('Published'),
             self::ARCHIVED => __('Archived'),
-        };
-    }
-
-    public function value(): string
-    {
-        return match ($this) {
-            self::DRAFT => 'draft',
-            self::PUBLISHED => 'published',
-            self::ARCHIVED => 'archived',
+            self::PRIVATED => __('Privated'),
         };
     }
 }

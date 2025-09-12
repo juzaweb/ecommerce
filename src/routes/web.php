@@ -10,3 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use Juzaweb\Modules\Ecommerce\Http\Controllers\CartController;
+
+Route::post('cart/add', [CartController::class, 'add'])->name('cart.add');

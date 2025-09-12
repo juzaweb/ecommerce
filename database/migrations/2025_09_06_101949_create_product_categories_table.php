@@ -17,7 +17,13 @@ return new class extends Migration
             'product_categories',
             function (Blueprint $table) {
                 $table->uuid('id')->primary();
+                $table->uuid('parent_id')->nullable()->index();
                 $table->timestamps();
+
+                $table->foreign('parent_id')
+                    ->references('id')
+                    ->on('product_categories')
+                    ->onDelete('cascade');
             }
         );
 
@@ -29,8 +35,9 @@ return new class extends Migration
                 $table->string('locale')->index();
                 $table->string('name');
                 $table->string('slug', 190)->unique();
-                $table->longText('description')->nullable();
+                $table->text('description')->nullable();
                 $table->timestamps();
+
                 $table->unique(['product_category_id', 'locale']);
                 $table->foreign('product_category_id')
                     ->references('id')

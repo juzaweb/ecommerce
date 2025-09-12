@@ -40,6 +40,31 @@ class Product extends Model implements TranslatableContract
         return $this->hasMany(ProductVariant::class, 'product_id');
     }
 
+    public function variant()
+    {
+        return $this->hasOne(ProductVariant::class, 'product_id');
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(
+            ProductCategory::class,
+            'product_category_product',
+            'product_id',
+            'category_id'
+        );
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(
+            ProductTag::class,
+            'product_product_tag',
+            'product_id',
+            'tag_id'
+        );
+    }
+
     public function seoMetaFill(): array
     {
         return [
