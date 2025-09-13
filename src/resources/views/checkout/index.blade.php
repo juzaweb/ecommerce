@@ -8,7 +8,7 @@
     <title>{{ __('Checkout') }} - {{ setting('sitename') }}</title>
     <link rel="shortcut icon" href="{{ upload_url(config('icon')) }}" type="image/x-icon" />
 
-    <link rel="stylesheet" href="https://cms.juzaweb.com/jw-styles/plugins/juzaweb/ecommerce/assets/css/checkout.min.css">
+    <link rel="stylesheet" href="{{ mix('css/checkout.min.css', 'modules/ecommerce') }}">
 
     <script>
         var Juzaweb = Juzaweb || {};
@@ -27,13 +27,11 @@
 <div class="banner" data-header="">
     <div class="wrap">
         <div class="shop logo logo--left ">
-
             <h1 class="shop__name">
                 <a href="/">
                     {{ __('Checkout') }}
                 </a>
             </h1>
-
         </div>
     </div>
 </div>
@@ -98,7 +96,7 @@
                                             </td>
 
                                             <td class="product-price text-right">
-                                                {{ $item->line_price }}
+                                                ${{ $item->line_price }}
                                             </td>
                                         </tr>
                                     @endforeach
@@ -153,7 +151,7 @@
                             </span>
 
                             <span bind="totalOrderItemPrice" class="total-line-subprice pull-right">
-                                {{ $cart->items->sum(fn ($item) => $item->variant->price * $item->quantity) }}
+                                ${{ $cart->getTotalAmount() }}
                             </span>
                         </div>
 
@@ -171,7 +169,7 @@
                                 {{ trans('ecommerce::translation.total') }}
                             </span>
                             <span bind="totalPrice" class="total-line-price pull-right">
-                                {{ $cart->items->sum(fn ($item) => $item->variant->price * $item->quantity) }}
+                                ${{ $cart->getTotalAmount() }}
                             </span>
                         </div>
                     </div>
@@ -262,15 +260,10 @@
                                         </div>
 
 
-                                        {% include 'ecom::frontend.checkout.components.order_address' %}
-
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        {% include 'ecom::frontend.checkout.components.shipping_to_other_address' %}
 
                         <div class="section" bind-class="{ 'pt0': otherAddress, 'pt10': !otherAddress}">
                             <div class="section__content">
@@ -323,7 +316,37 @@
                                 </h2>
                             </div>
                             <div class="section__content">
-                                {% include 'ecom::frontend.checkout.components.payment_methods' %}
+                                @foreach($paymentMethods as $index => $paymentMethod)
+                                    <div class="content-box">
+
+                                        <div class="content-box__row">
+                                            <div class="radio-wrapper">
+                                                <div class="radio__input">
+                                                    <input class="input-radio" type="radio" value="{{ $paymentMethod->id }}" name="payment_method_id" id="payment_method_{{ $paymentMethod->id }}" data-check-id="4" bind="payment_method_id" @if($index === 0) checked @endif>
+                                                </div>
+
+                                                <label class="radio__label" for="payment_method_{{ $paymentMethod->id }}">
+                                                    <span class="radio__label__primary">{{ $paymentMethod->name }}</span>
+                                                    <span class="radio__label__accessory">
+                        <ul>
+                            <li class="payment-icon-v2 payment-icon--4">
+                                <i class="fa fa-money payment-icon-fa" aria-hidden="true"></i>
+                            </li>
+                        </ul>
+                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="radio-wrapper content-box__row content-box__row--secondary hide" id="payment-gateway-subfields-{{ $paymentMethod->id }}" bind-show="payment_method_id == {{ $paymentMethod->id }}">
+                                            <div class="blank-slate">
+                                                <p>{{ $paymentMethod->description }}</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                @endforeach
+
                             </div>
                         </div>
                         <div class="section hidden-md hidden-lg">
@@ -341,9 +364,9 @@
                 </div>
             </div>
 
-            <div class="main_footer footer unprint">
+            {{--<div class="main_footer footer unprint">
                 <div class="mt10"></div>
-            </div>
+            </div>--}}
 
             <div class="modal fade" id="refund-policy" data-width="" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg">
@@ -395,7 +418,7 @@
 </div>
 <script>var code_langs = {'choose_province': '{{ trans('ecommerce::translation.choose_province') }}'};</script>
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
-<script src="https://cms.juzaweb.com/jw-styles/plugins/juzaweb/ecommerce/assets/js/checkout.min.js" type="text/javascript"></script>
+<script src="{{ mix('js/checkout.min.js', 'modules/ecommerce') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(document).ajaxStart(function () {

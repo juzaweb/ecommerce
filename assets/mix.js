@@ -1,8 +1,14 @@
 const mix = require('laravel-mix');
 const path = require('path');
 
-const baseAsset = path.resolve(__dirname, '');
+mix.disableNotifications();
+mix.version();
+
+const baseAsset = path.dirname(__filename, '');
 const basePublish = baseAsset + '/public';
+
+mix.setResourceRoot(baseAsset);
+mix.setPublicPath(basePublish);
 
 mix.styles(
     [
@@ -11,7 +17,7 @@ mix.styles(
         baseAsset + '/css/select2-min.css',
         baseAsset + '/css/checkout.css',
     ],
-    `${basePublish}/css/checkout.min.css`
+    `css/checkout.min.css`
 );
 
 mix.combine(
@@ -25,7 +31,7 @@ mix.combine(
         baseAsset + '/js/ua-parser.pack.js',
         baseAsset + '/js/checkout.js',
     ],
-    `${basePublish}/js/checkout.min.js`
+    `js/checkout.min.js`
 );
 
 mix.styles(
@@ -33,7 +39,7 @@ mix.styles(
         baseAsset + '/css/bootstrap.min.css',
         baseAsset + '/css/thankyou.css',
     ],
-    `${basePublish}/css/thankyou.min.css`
+    `css/thankyou.min.css`
 );
 
 mix.combine(
@@ -42,5 +48,5 @@ mix.combine(
         baseAsset + '/js/twine.min.js',
         baseAsset + '/js/thankyou.js',
     ],
-    `${basePublish}/js/thankyou.min.js`
+    `js/thankyou.min.js`
 );

@@ -28,5 +28,7 @@ return [
     'email' => 'Email',
     'full_name' => 'Full name',
     'phone' => 'Phone',
+    'free' => 'Free',
+    'scroll_mouse_to_view_more' => 'Scroll mouse to view more',
 ];
  

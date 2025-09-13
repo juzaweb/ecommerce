@@ -33,8 +33,10 @@ return new class extends Migration
                 $table->string('payment_method_name', 250);
                 $table->text('notes')->nullable();
                 $table->boolean('other_address')->default(0);
-                $table->string('payment_status', 10)->default('pending')->comment('pending');
-                $table->string('delivery_status', 10)->default('pending')->comment('pending');
+                $table->string('payment_status', 10)
+                    ->default('pending')->comment('pending');
+                $table->string('delivery_status', 10)
+                    ->default('pending')->comment('pending');
                 $table->uuid('user_id')->index();
                 $table->timestamps();
 
@@ -49,7 +51,6 @@ return new class extends Migration
             function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
-                $table->string('thumbnail')->nullable();
                 $table->decimal('price', 15);
                 $table->decimal('line_price', 15);
                 $table->integer('quantity');

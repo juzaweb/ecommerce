@@ -12,8 +12,8 @@ namespace Juzaweb\Modules\Ecommerce\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Juzaweb\Core\Http\Controllers\ThemeController;
-use Juzaweb\Modules\Ecommerce\Http\Requests\CheckoutRequest;
 use Juzaweb\Modules\Ecommerce\Models\Cart;
+use Juzaweb\Modules\Payment\Models\PaymentMethod;
 
 class CheckoutController extends ThemeController
 {
@@ -32,23 +32,18 @@ class CheckoutController extends ThemeController
         $cart->load(['items.variant.product' => fn ($q) => $q->withTranslation()]);
         $user = $request->user();
 
+        $paymentMethods = PaymentMethod::withTranslation()->whereActive()->get();
+
         return view(
             'ecommerce::checkout.index',
-            compact('cart', 'user')
+            compact('cart', 'user', 'paymentMethods')
         );
     }
 
-    public function checkout(CheckoutRequest $request)
+    public function thank(Request $request, string $orderId)
     {
-        $cartId = $request->cookie('cart_id');
-        if ($cartId != $request->cookie('cart_id')) {
-            abort(404, __('Cart not found'));
-        }
-
-        $cart = Cart::where('id', $cartId)
-            ->where('user_id', $request->user()->id)
-            ->first();
 
 
+        return view('ecommerce::checkout.thankyou');
     }
 }

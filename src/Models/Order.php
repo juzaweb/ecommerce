@@ -5,12 +5,13 @@ namespace Juzaweb\Modules\Ecommerce\Models;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Juzaweb\Core\Models\Model;
 use Juzaweb\Core\Traits\HasAPI;
+use Juzaweb\Core\Traits\HasCodeWithMonth;
 use Juzaweb\Modules\Payment\Contracts\Paymentable;
 use Juzaweb\Modules\Payment\Models\PaymentHistory;
 
 class Order extends Model implements Paymentable
 {
-    use HasAPI;
+    use HasAPI, HasCodeWithMonth;
 
     protected $table = 'orders';
 
@@ -44,19 +45,24 @@ class Order extends Model implements Paymentable
         'quantity' => 'integer',
     ];
 
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+    }
+
     public function paymentHistories(): MorphMany
     {
         return $this->morphMany(PaymentHistory::class, 'paymentable');
     }
 
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
     }
 
     public function getTotalAmount(): float
     {
-        return 10;
+        return $this->total;
     }
 
     public function getCurrency(): string
