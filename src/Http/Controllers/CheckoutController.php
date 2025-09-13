@@ -13,6 +13,7 @@ namespace Juzaweb\Modules\Ecommerce\Http\Controllers;
 use Illuminate\Http\Request;
 use Juzaweb\Core\Http\Controllers\ThemeController;
 use Juzaweb\Modules\Ecommerce\Models\Cart;
+use Juzaweb\Modules\Ecommerce\Models\Order;
 use Juzaweb\Modules\Payment\Models\PaymentMethod;
 
 class CheckoutController extends ThemeController
@@ -42,6 +43,11 @@ class CheckoutController extends ThemeController
 
     public function thankyou(Request $request, string $orderId)
     {
-        return view('ecommerce::checkout.thankyou');
+        $order = Order::findOrFail($orderId);
+
+        return view(
+            'ecommerce::checkout.thankyou',
+            compact('order')
+        );
     }
 }

@@ -12,6 +12,7 @@ use Juzaweb\Core\Traits\HasCodeWithMonth;
 use Juzaweb\Modules\Ecommerce\Enums\OrderPaymentStatus;
 use Juzaweb\Modules\Payment\Contracts\Paymentable;
 use Juzaweb\Modules\Payment\Models\PaymentHistory;
+use Juzaweb\Modules\Payment\Models\PaymentMethod;
 
 class Order extends Model implements Paymentable
 {
@@ -50,6 +51,10 @@ class Order extends Model implements Paymentable
         'payment_status' => OrderPaymentStatus::class,
     ];
 
+    protected $appends = [
+        'payment_status_text',
+    ];
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
@@ -60,9 +65,19 @@ class Order extends Model implements Paymentable
         return $this->morphMany(PaymentHistory::class, 'paymentable');
     }
 
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
+    }
+
+    public function getPaymentStatusTextAttribute(): string
+    {
+        return $this->payment_status?->label() ?? '';
     }
 
     public function getTotalAmount(): float

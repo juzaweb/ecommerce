@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    {% set shopName = config('shop_name')|default(config('title')) %}
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ shopName }} - {{ trans('ecom::content.thank_you') }}" />
-    <title>{{ shopName }} - {{ trans('ecom::content.thank_you') }}</title>
-    <link rel="shortcut icon" href="{{ upload_url(config('icon')) }}" type="image/x-icon" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="{{ plugin_asset('css/thankyou.min.css', 'juzaweb/ecommerce') }}" rel="stylesheet" type="text/css" />
-    <style>
-        #map {width: 100%;height: 245px;} .hidden-map{display:none;}
-    </style>
+    <meta name="description" content="{{ setting('sitename') }} - {{ trans('ecommerce::translation.thank_you') }}"/>
+    <title>{{ setting('sitename') }} - {{ trans('ecommerce::translation.thank_you') }}</title>
+    <link rel="shortcut icon" href="{{ upload_url(config('icon')) }}" type="image/x-icon"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="{{ mix('css/thankyou.min.css', 'modules/ecommerce') }}">
 
-    {{ do_action('ecom.thankyou_page.btns.head', order) }}
+    <style>
+        #map {
+            width: 100%;
+            height: 245px;
+        }
+
+        .hidden-map {
+            display: none;
+        }
+    </style>
 </head>
 <body class="body--custom-background-color ">
 <div context="checkout" define="{checkout: new Juzaweb.StoreCheckout(this,{})}" class="container">
@@ -24,7 +30,7 @@
 
                 <h1 class="shop__name">
                     <a href="/">
-                        {{ shopName }}
+                        {{ setting('sitename') }}
                     </a>
                 </h1>
 
@@ -39,16 +45,18 @@
                         <div class="icon icon--order-success svg">
                             <svg xmlns="http://www.w3.org/2000/svg" width="72px" height="72px">
                                 <g fill="none" stroke="#8EC343" stroke-width="2">
-                                    <circle cx="36" cy="36" r="35" style="stroke-dasharray:240px, 240px; stroke-dashoffset: 480px;"></circle>
-                                    <path d="M17.417,37.778l9.93,9.909l25.444-25.393" style="stroke-dasharray:50px, 50px; stroke-dashoffset: 0px;"></path>
+                                    <circle cx="36" cy="36" r="35"
+                                            style="stroke-dasharray:240px, 240px; stroke-dashoffset: 480px;"></circle>
+                                    <path d="M17.417,37.778l9.93,9.909l25.444-25.393"
+                                          style="stroke-dasharray:50px, 50px; stroke-dashoffset: 0px;"></path>
                                 </g>
                             </svg>
                         </div>
                     </div>
                     <div class="thankyou-message-text">
-                        <h3>{{ trans('ecom::content.thank_you_for_your_order') }}</h3>
+                        <h3>{{ trans('ecommerce::translation.thank_you_for_your_order') }}</h3>
                         <p>
-                            {{ trans('ecom::content.confirmation_email_order_complete', {'email': order.email}) }}
+                            {{ trans('ecommerce::translation.confirmation_email_order_complete', ['email' => $order->email]) }}
                         </p>
                         <div style="font-style: italic;">
 
@@ -59,37 +67,43 @@
                     <div class="order-summary order-summary--custom-background-color ">
                         <div class="order-summary-header summary-header--thin summary-header--border">
                             <h2>
-                                <label class="control-label">{{ trans('ecom::content.order') }}</label>
-                                {{ order.code }}
-                                <label class="control-label unprint">({{ order.quantity }})</label>
+                                <label class="control-label">{{ trans('ecommerce::translation.order') }}</label>
+                                {{ $order->code }}
+                                <label class="control-label unprint">({{ $order->quantity }})</label>
                             </h2>
-                            <a class="underline-none expandable expandable--pull-right mobile unprint" bind-event-click="toggle(this, '.order-items')" bind-class="{open: order_expand}" href="javascript:void(0)">
-                                {{ trans('ecom::content.view_detail') }}
+                            <a class="underline-none expandable expandable--pull-right mobile unprint"
+                               bind-event-click="toggle(this, '.order-items')" bind-class="{open: order_expand}"
+                               href="javascript:void(0)">
+                                {{ trans('ecommerce::translation.view_detail') }}
                             </a>
                         </div>
-                        <div class="order-items mobile--is-collapsed" bind-class="{'mobile--is-collapsed': !order_expand}">
+                        <div class="order-items mobile--is-collapsed"
+                             bind-class="{'mobile--is-collapsed': !order_expand}">
                             <div class="summary-body summary-section summary-product">
                                 <div class="summary-product-list">
                                     <ul class="product-list">
-                                        {% for product in order.items %}
-                                        <li class="product product-has-image clearfix">
-                                            <div class="product-thumbnail pull-left">
-                                                <div class="product-thumbnail__wrapper">
-                                                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="product-thumbnail__image" />
+                                        @foreach($order->items as $item)
+                                            <li class="product product-has-image clearfix">
+                                                <div class="product-thumbnail pull-left">
+                                                    <div class="product-thumbnail__wrapper">
+                                                        <img src="{{ $item->thumbnail }}" alt="{{ $item->title }}"
+                                                             class="product-thumbnail__image"/>
+                                                    </div>
+                                                    <span class="product-thumbnail__quantity unprint"
+                                                          aria-hidden="true">{{ $item->quantity }}</span>
                                                 </div>
-                                                <span class="product-thumbnail__quantity unprint" aria-hidden="true">{{ product.quantity }}</span>
-                                            </div>
-                                            <div class="product-info pull-left">
+                                                <div class="product-info pull-left">
                                                     <span class="product-info-name">
-                                                        <strong>{{ product.title }}</strong>
-                                                        <label class="print">x{{ product.quantity }}</label>
+                                                        <strong>{{ $item->title }}</strong>
+                                                        <label class="print">x{{ $item->quantity }}</label>
                                                     </span>
-                                            </div>
-                                            <strong class="product-price pull-right">
-                                                {{ product.line_price }}
-                                            </strong>
-                                        </li>
-                                        {% endfor %}
+                                                </div>
+                                                <strong class="product-price pull-right">
+                                                    {{ $item->line_price }}
+                                                </strong>
+                                            </li>
+                                        @endforeach
+
                                     </ul>
                                 </div>
                             </div>
@@ -98,32 +112,32 @@
                         <div class="summary-section  border-top-none--mobile ">
                             <div class="total-line total-line-subtotal clearfix">
                                         <span class="total-line-name pull-left">
-                                            {{ trans('ecom::content.total_price') }}
+                                            {{ trans('ecommerce::translation.total_price') }}
                                         </span>
                                 <span class="total-line-subprice pull-right">
-                                            {{ order.total_price }}
+                                            {{ $order->total_price }}
                                         </span>
                             </div>
 
-                            {% if (order.is_requires_shipping) %}
-                            <div class="total-line total-line-shipping clearfix">
+                            @if(false)
+                                <div class="total-line total-line-shipping clearfix">
                                     <span class="total-line-name pull-left">
-                                        {{ trans('ecom::content.shipping_fee') }}
+                                        {{ trans('ecommerce::translation.shipping_fee') }}
                                     </span>
-                                <span class="pull-right">
-                                        {{ order.shipping_fee }}
+                                    <span class="pull-right">
+                                        ${{ $order->shipping_fee ?? '0' }}
                                     </span>
-                            </div>
-                            {% endif %}
+                                </div>
+                            @endif
 
                         </div>
                         <div class="summary-section">
                             <div class="total-line total-line-total clearfix">
                                     <span class="total-line-name total-line-name--bold pull-left">
-                                        {{ trans('ecom::content.total') }}
+                                        {{ trans('ecommerce::translation.total') }}
                                     </span>
                                 <span class="total-line-price pull-right">
-                                        {{ order.total }}
+                                        {{ $order->getTotalAmount() }}
                                     </span>
                             </div>
                         </div>
@@ -139,20 +153,20 @@
                                 <div class="order-summary order-summary--white no-border">
                                     <div class="order-summary-header">
                                         <h2>
-                                            <label class="control-label">{{ trans('ecom::content.billing_information') }}</label>
+                                            <label class="control-label">{{ trans('ecommerce::translation.billing_information') }}</label>
                                         </h2>
                                     </div>
                                     <div class="summary-section no-border no-padding-top">
                                         <p class="address-name">
-                                            {{ order.name }}
+                                            {{ $order->name }}
                                         </p>
 
                                         <p class="address-name">
-                                            {{ order.email }}
+                                            {{ $order->email }}
                                         </p>
 
                                         <p class="address-address">
-                                            {{ order.address }}
+                                            {{ $order->address }}
                                         </p>
 
                                     </div>
@@ -164,11 +178,11 @@
                                 <div class="order-summary order-summary--white no-border no-padding-top">
                                     <div class="order-summary-header">
                                         <h2>
-                                            <label class="control-label">{{ trans('ecom::content.shipping_information') }}</label>
+                                            <label class="control-label">{{ trans('ecommerce::translation.shipping_information') }}</label>
                                         </h2>
                                     </div>
                                     <div class="summary-section no-border no-padding-top">
-                                        {% if(order.other_address == 1) %}
+                                        {{--{% if($order->other_address == 1) %}
                                         <p class="address-name">
                                             {{ shipping_address.full_name }}
                                         </p>
@@ -187,19 +201,29 @@
                                         {% else %}
 
                                         <p class="address-name">
-                                            {{ order.name }}
+                                            {{ $order->name }}
                                         </p>
 
                                         <p class="address-name">
-                                            {{ order.email }}
+                                            {{ $order->email }}
                                         </p>
 
                                         <p class="address-address">
-                                            {{ order.address }}
+                                            {{ $order->address }}
                                         </p>
 
-                                        {% endif %}
+                                        {% endif %}--}}
+                                        <p class="address-name">
+                                            {{ $order->name }}
+                                        </p>
 
+                                        <p class="address-name">
+                                            {{ $order->email }}
+                                        </p>
+
+                                        <p class="address-address">
+                                            {{ $order->address }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -210,48 +234,48 @@
                                 <div class="order-summary order-summary--white no-border">
                                     <div class="order-summary-header">
                                         <h2>
-                                            <label class="control-label">{{ trans('ecom::content.payment_method') }}</label>
+                                            <label class="control-label">{{ trans('ecommerce::translation.payment_method') }}</label>
                                         </h2>
                                     </div>
                                     <div class="summary-section no-border no-padding-top">
-                                        <span>{{ order.payment_method.name }} ({{ order.payment_status_text }})</span>
-                                        {% if (order.payment_method.description) %}
-                                        <p><b>{{ trans('ecom::content.payment_instruction') }}</b></p>
-                                        <p>{{ order.payment_method.description }}</p>
-                                        {% endif %}
+                                        <span>{{ $order->paymentMethod->name ?? $order->payment_method_name }} ({{ $order->payment_status_text }})</span>
+                                        @if ($order->paymentMethod->description)
+                                        <p><b>{{ trans('ecommerce::translation.payment_instructions') }}</b></p>
+                                        <p>{{ $order->paymentMethod->description }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                            {% if (order.is_requires_shipping) %}
+                            {{--{% if ($order->is_requires_shipping) %}
                             <div class="col-md-6 col-sm-6">
                                 <div class="order-summary order-summary--white no-border">
                                     <div class="order-summary-header">
                                         <h2>
-                                            <label class="control-label">{{ trans('ecom::content.shipping_method') }}</label>
+                                            <label class="control-label">{{ trans('ecommerce::translation.shipping_method') }}</label>
                                         </h2>
                                     </div>
 
                                     <div class="summary-section no-border no-padding-top">
-                                        <span>{{ order.shipping_method_name }} - {{ order.shipping_fee }} ({{ order.shipping_status_text }})</span>
+                                        <span>{{ $order->shipping_method_name }} - {{ $order->shipping_fee }} ({{ $order->shipping_status_text }})</span>
                                     </div>
                                 </div>
                             </div>
-                            {% endif %}
+                            {% endif %}--}}
                         </div>
                     </div>
 
                     <div class="order-success unprint">
-                        {{ do_action('ecom.thankyou_page.btns.left', order) }}
                         <a href="/" class="btn btn-primary">
-                            {{ trans('ecom::content.continue_shopping') }}
+                            {{ trans('ecommerce::translation.continue_shopping') }}
                         </a>
+
                         <a onclick="window.print()" class="nounderline print-link" href="javascript:void(0)">
                             <div class="print-link__block clearfix">
                                 <i class="fa fa-print icon-print" aria-hidden="true"></i>
-                                {{ trans('ecom::content.print') }}
+                                {{ trans('ecommerce::translation.print') }}
                             </div>
                         </a>
-                        {{ do_action('ecom.thankyou_page.btns.right') }}
+
                     </div>
                 </div>
             </div>
@@ -267,7 +291,7 @@
                     <div class="modal-header">
                         <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
                         <h4 class="modal-title">
-                            {{ trans('ecom::content.refund_policy') }}
+                            {{ trans('ecommerce::translation.refund_policy') }}
                         </h4>
                     </div>
                     <div class="modal-body">
@@ -281,7 +305,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                        <h4 class="modal-title">{{ trans('ecom::content.privacy_policy') }}</h4>
+                        <h4 class="modal-title">{{ trans('ecommerce::translation.privacy_policy') }}</h4>
                     </div>
                     <div class="modal-body">
                         <pre></pre>
@@ -294,7 +318,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                        <h4 class="modal-title">{{ trans('ecom::content.terms_of_service') }}</h4>
+                        <h4 class="modal-title">{{ trans('ecommerce::translation.terms_of_service') }}</h4>
                     </div>
                     <div class="modal-body">
                         <pre></pre>
@@ -306,7 +330,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
-<script src="{{ plugin_asset('js/thankyou.min.js', 'juzaweb/ecommerce') }}" type="text/javascript"></script>
+<script src="{{ mix('js/thankyou.min.js', 'modules/ecommerce') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
     context = {};
