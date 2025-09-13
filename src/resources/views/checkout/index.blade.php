@@ -58,7 +58,7 @@
 </div>
 <form
         method="post"
-        action="{{ route('checkout', [$cart->id]) }}"
+        action="{{ route('payment.purchase', ['ecommerce']) }}"
         data-toggle="validator"
         class="content stateful-form formCheckout"
 >
