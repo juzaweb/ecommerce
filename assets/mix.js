@@ -5,10 +5,9 @@ mix.disableNotifications();
 mix.version();
 
 const baseAsset = path.dirname(__filename, '');
-const basePublish = baseAsset + '/public';
+const basePublish = 'modules/ecommerce/assets/public';
 
-// mix.setResourceRoot(baseAsset);
-mix.setPublicPath('modules/ecommerce/assets/public');
+mix.setPublicPath(basePublish);
 
 mix.styles(
     [
@@ -17,7 +16,7 @@ mix.styles(
         baseAsset + '/css/select2-min.css',
         baseAsset + '/css/checkout.css',
     ],
-    `css/checkout.min.css`
+    `${basePublish}/css/checkout.min.css`
 );
 
 mix.combine(
@@ -31,7 +30,7 @@ mix.combine(
         baseAsset + '/js/ua-parser.pack.js',
         baseAsset + '/js/checkout.js',
     ],
-    `js/checkout.min.js`
+    `${basePublish}/js/checkout.min.js`
 );
 
 mix.styles(
@@ -39,7 +38,7 @@ mix.styles(
         baseAsset + '/css/bootstrap.min.css',
         baseAsset + '/css/thankyou.css',
     ],
-    `css/thankyou.min.css`
+    `${basePublish}/css/thankyou.min.css`
 );
 
 mix.combine(
@@ -48,5 +47,5 @@ mix.combine(
         baseAsset + '/js/twine.min.js',
         baseAsset + '/js/thankyou.js',
     ],
-    `js/thankyou.min.js`
+    `${basePublish}/js/thankyou.min.js`
 );
