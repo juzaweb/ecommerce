@@ -29,7 +29,7 @@
         <div class="shop logo logo--left ">
             <h1 class="shop__name">
                 <a href="/">
-                    {{ __('Checkout') }}
+                    {{ setting('sitename') }}
                 </a>
             </h1>
         </div>
@@ -84,7 +84,7 @@
                                             <td>
                                                 <div class="product-thumbnail">
                                                     <div class="product-thumbnail__wrapper">
-                                                        <img src="{{ $item->thumbnail }}" class="product-thumbnail__image" alt="" />
+                                                        <img src="{{ $item->variant->product->getThumbnail() }}" class="product-thumbnail__image" alt="" />
                                                     </div>
                                                     <span class="product-thumbnail__quantity" aria-hidden="true">{{ $item->quantity }}</span>
                                                 </div>
@@ -176,9 +176,9 @@
                 </div>
                 <div class="form-group clearfix hidden-sm hidden-xs">
                     <div class="field__input-btn-wrapper mt10">
-                        <a class="previous-link" href="/cart">
+                        <a class="previous-link" href="/">
                             <i class="fa fa-angle-left fa-lg" aria-hidden="true"></i>
-                            <span>{{ trans('ecommerce::translation.back_to_cart') }}</span>
+                            <span>{{ trans('ecommerce::translation.back_to_home') }}</span>
                         </a>
                         <input class="btn btn-primary btn-checkout" data-loading-text="{{ trans('ecommerce::translation.please_wait') }}" type="button" bind-event-click="paymentCheckout('AIzaSyAjQYbV19v7UMDVk0cDZ54yKh3OP1hQhbk;AIzaSyCLd-YkfOzBXlNGfS_FNLnpolyME1tRAJI;AIzaSyDdvilzaJlb50t2IRC3PrfSb1lNzf6n3pQ')" value="{{ strtoupper(trans('ecommerce::translation.order')) }}" />
                     </div>
@@ -197,7 +197,7 @@
                 <div class="shop logo logo--left ">
                     <h1 class="shop__name">
                         <a href="/">
-                            {{ config('sitename') }}
+                            {{ setting('sitename') }}
                         </a>
                     </h1>
                 </div>
@@ -322,7 +322,7 @@
                                         <div class="content-box__row">
                                             <div class="radio-wrapper">
                                                 <div class="radio__input">
-                                                    <input class="input-radio" type="radio" value="{{ $paymentMethod->id }}" name="payment_method_id" id="payment_method_{{ $paymentMethod->id }}" data-check-id="4" bind="payment_method_id" @if($index === 0) checked @endif>
+                                                    <input class="input-radio" type="radio" value="{{ $paymentMethod->driver }}" name="method" id="payment_method_{{ $paymentMethod->id }}" data-check-id="4" bind="payment_method_id" @if($index === 0) checked @endif>
                                                 </div>
 
                                                 <label class="radio__label" for="payment_method_{{ $paymentMethod->id }}">
@@ -367,6 +367,23 @@
             {{--<div class="main_footer footer unprint">
                 <div class="mt10"></div>
             </div>--}}
+
+            <div class="modal fade" id="payment-modal" data-width="" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">{{ trans('ecommerce::translation.payment_your_order') }}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="payment-container">
+                                <div id="form-card"></div>
+
+                                <div id="payment-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="modal fade" id="refund-policy" data-width="" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg">

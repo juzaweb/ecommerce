@@ -23,6 +23,7 @@ return [
     'total_price' => 'Total price',
     'shipping_to_other_address' => 'Shipping to other address',
     'back_to_cart' => 'Back to cart',
+    'back_to_home' => 'Back to Home',
     'apply' => 'Apply',
     'discount_code' => 'Discount code',
     'email' => 'Email',
@@ -30,5 +31,7 @@ return [
     'phone' => 'Phone',
     'free' => 'Free',
     'scroll_mouse_to_view_more' => 'Scroll mouse to view more',
+    'please_wait' => 'Please wait...',
+    'payment_your_order' => 'Payment your order',
 ];
  

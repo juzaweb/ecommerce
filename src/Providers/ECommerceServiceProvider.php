@@ -4,6 +4,8 @@ namespace Juzaweb\Modules\Ecommerce\Providers;
 
 use Juzaweb\Core\Facades\Menu;
 use Juzaweb\Core\Providers\ServiceProvider;
+use Juzaweb\Modules\Ecommerce\Services\EcommercePaymentHandler;
+use Juzaweb\Modules\Payment\Contracts\PaymentManager;
 
 class ECommerceServiceProvider extends ServiceProvider
 {
@@ -14,6 +16,11 @@ class ECommerceServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app[PaymentManager::class]->registerModule(
+            'ecommerce',
+            new EcommercePaymentHandler()
+        );
+
         $this->booted(
             function () {
                 $this->registerMenus();

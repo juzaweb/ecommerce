@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Juzaweb\Core\Models\User;
+use Juzaweb\Modules\Ecommerce\Enums\OrderPaymentStatus;
 use Juzaweb\Modules\Ecommerce\Models\Cart;
 use Juzaweb\Modules\Ecommerce\Models\Order;
 use Juzaweb\Modules\Payment\Contracts\ModuleHandlerInterface;
@@ -89,7 +90,7 @@ class EcommercePaymentHandler implements ModuleHandlerInterface
             );
         }
 
-        $paymentMethod = PaymentMethod::find($params['payment_method_id']);
+        $paymentMethod = PaymentMethod::where(['driver' => $params['method']])->first();
 
         throw_if($paymentMethod === null, new PaymentException('Invalid payment method'));
 
@@ -129,13 +130,19 @@ class EcommercePaymentHandler implements ModuleHandlerInterface
 
         session()->put('payment_order_id', $order->id);
 
+        // $cart->delete();
+        // cookie()->queue(cookie()->forget('cart_id'));
+
         return $order;
     }
 
     public function success(Paymentable $paymentable, array $params): void
     {
-        // Implement the logic to handle a successful payment
-
+        DB::transaction(function () use ($paymentable, $params) {
+            $paymentable->update([
+                'status' => OrderPaymentStatus::COMPLETED,
+            ]);
+        });
     }
 
     /**

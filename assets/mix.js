@@ -7,8 +7,8 @@ mix.version();
 const baseAsset = path.dirname(__filename, '');
 const basePublish = baseAsset + '/public';
 
-mix.setResourceRoot(baseAsset);
-mix.setPublicPath(basePublish);
+// mix.setResourceRoot(baseAsset);
+mix.setPublicPath('modules/ecommerce/assets/public');
 
 mix.styles(
     [

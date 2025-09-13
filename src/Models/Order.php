@@ -2,16 +2,20 @@
 
 namespace Juzaweb\Modules\Ecommerce\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Juzaweb\Core\Models\Model;
 use Juzaweb\Core\Traits\HasAPI;
 use Juzaweb\Core\Traits\HasCodeWithMonth;
+use Juzaweb\Modules\Ecommerce\Enums\OrderPaymentStatus;
 use Juzaweb\Modules\Payment\Contracts\Paymentable;
 use Juzaweb\Modules\Payment\Models\PaymentHistory;
 
 class Order extends Model implements Paymentable
 {
-    use HasAPI, HasCodeWithMonth;
+    use HasAPI, HasCodeWithMonth, HasUuids;
 
     protected $table = 'orders';
 
@@ -43,9 +47,10 @@ class Order extends Model implements Paymentable
         'total' => 'float',
         'discount' => 'float',
         'quantity' => 'integer',
+        'payment_status' => OrderPaymentStatus::class,
     ];
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
@@ -55,7 +60,7 @@ class Order extends Model implements Paymentable
         return $this->morphMany(PaymentHistory::class, 'paymentable');
     }
 
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
     }

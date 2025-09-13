@@ -40,10 +40,8 @@ class CheckoutController extends ThemeController
         );
     }
 
-    public function thank(Request $request, string $orderId)
+    public function thankyou(Request $request, string $orderId)
     {
-
-
         return view('ecommerce::checkout.thankyou');
     }
 }

@@ -770,22 +770,38 @@ window.Juzaweb || (window.Juzaweb = {});
                     data: $form.serialize()
                 }).done(function(response) {
 
-                    if (response.status == true) {
-                        window.location.href = response.data.redirect;
-                    } else {
-                        let errorHtml = "";
-                        if (response.errors != null && response.errors.length > 0) {
-                            for (i = 0; i < response.errors.length; i++) {
-                                errorHtml += "<li>" + response.errors[i] + "</li>";
-                            }
+                    if (response.type === 'redirect') {
+                        window.location.href = response.redirect;
+                        return false;
+                    }
+
+                    if (response.type === 'embed') {
+                        let htm = `<iframe src="${response.embed_url}" width="100%" height="350px" frameborder="0"></iframe>`;
+                        if ($('#payment-container').length) {
+                            $('#payment-container').html(htm);
                         } else {
-                            errorHtml += "<li>" + response.message + "</li>";
+                            form.html(htm);
                         }
 
-                        $(".sidebar__content .has-error .help-block > ul").html(errorHtml);
+                        $('#payment-modal').modal();
 
-                        $(".btn-checkout").button('reset');
+                        that.checkStatus(response.payment_history_id, response.order_id);
+
+                        return false;
                     }
+
+                    let errorHtml = "";
+                    if (response.errors != null && response.errors.length > 0) {
+                        for (i = 0; i < response.errors.length; i++) {
+                            errorHtml += "<li>" + response.errors[i] + "</li>";
+                        }
+                    } else {
+                        errorHtml += "<li>" + response.message + "</li>";
+                    }
+
+                    $(".sidebar__content .has-error .help-block > ul").html(errorHtml);
+
+                    $(".btn-checkout").button('reset');
 
                     return false;
                 }).fail(function(data) {
@@ -834,6 +850,44 @@ window.Juzaweb || (window.Juzaweb = {});
                 });
             }, 3000);
         };
+
+        StoreCheckout.prototype.checkStatus = function (paymentHistoryId, orderId) {
+            let interval = setInterval(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: `/payment/ecommerce/status/${paymentHistoryId}`,
+                    dataType: 'json',
+                    success: function(response) {
+                        let status = response.status;
+
+                        if (status === 'pending' || status === 'processing') {
+                            return;
+                        }
+
+                        // if (self.options.onSuccess && status === 'success') {
+                        //     self.options.onSuccess(response);
+                        // }
+                        //
+                        // if (status === 'failed' && self.options.onError) {
+                        //     self.options.onError(response);
+                        // }
+
+                        window.location.href = `/invoices/${orderId}`;
+
+                        clearInterval(interval);
+                    }.bind(this),
+                    error: function(jqxhr) {
+                        // if (self.options.onError) {
+                        //     self.options.onError(jqxhr);
+                        // }
+
+                        window.location.href = `/invoices/${orderId}`;
+
+                        clearInterval(interval);
+                    }.bind(this)
+                });
+            }, 2000);
+        }
 
         return StoreCheckout;
     }();

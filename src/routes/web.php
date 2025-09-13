@@ -19,3 +19,5 @@ Route::delete('cart/{itemId}', [CartController::class, 'remove'])->name('cart.re
 
 Route::get('checkout/{cartId}', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('checkout/{cartId}', [CheckoutController::class, 'index']);
+
+Route::get('invoices/{orderId}', [CheckoutController::class, 'thankyou'])->name('checkout.thankyou');

@@ -65,6 +65,11 @@ class Product extends Model implements TranslatableContract
         );
     }
 
+    public function getThumbnail(): ?string
+    {
+        return $this->getFirstMediaUrl('thumbnail');
+    }
+
     public function seoMetaFill(): array
     {
         return [
