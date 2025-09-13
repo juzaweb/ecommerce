@@ -30,7 +30,7 @@ class CheckoutController extends ThemeController
 
         abort_if($cart === null, 404, __('Cart not found'));
 
-        $cart->load(['items.variant.product' => fn ($q) => $q->withTranslation()]);
+        $cart->load(['items.variant' => fn ($q) => $q->withTranslation()]);
         $user = $request->user();
 
         $paymentMethods = PaymentMethod::withTranslation()->whereActive()->get();
@@ -44,6 +44,11 @@ class CheckoutController extends ThemeController
     public function thankyou(Request $request, string $orderId)
     {
         $order = Order::findOrFail($orderId);
+
+        $order->load([
+            'items.variant' => fn ($q) => $q->withTranslation(),
+            'items.product' => fn ($q) => $q->withTranslation(),
+        ]);
 
         return view(
             'ecommerce::checkout.thankyou',

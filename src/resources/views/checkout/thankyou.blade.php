@@ -86,7 +86,7 @@
                                             <li class="product product-has-image clearfix">
                                                 <div class="product-thumbnail pull-left">
                                                     <div class="product-thumbnail__wrapper">
-                                                        <img src="{{ $item->thumbnail }}" alt="{{ $item->title }}"
+                                                        <img src="{{ $item->product->getThumbnail() }}" alt="{{ $item->title }}"
                                                              class="product-thumbnail__image"/>
                                                     </div>
                                                     <span class="product-thumbnail__quantity unprint"
@@ -99,7 +99,7 @@
                                                     </span>
                                                 </div>
                                                 <strong class="product-price pull-right">
-                                                    {{ $item->line_price }}
+                                                    ${{ $item->line_price }}
                                                 </strong>
                                             </li>
                                         @endforeach
@@ -115,7 +115,7 @@
                                             {{ trans('ecommerce::translation.total_price') }}
                                         </span>
                                 <span class="total-line-subprice pull-right">
-                                            {{ $order->total_price }}
+                                            ${{ $order->total_price }}
                                         </span>
                             </div>
 
@@ -137,7 +137,7 @@
                                         {{ trans('ecommerce::translation.total') }}
                                     </span>
                                 <span class="total-line-price pull-right">
-                                        {{ $order->getTotalAmount() }}
+                                        ${{ $order->getTotalAmount() }}
                                     </span>
                             </div>
                         </div>
