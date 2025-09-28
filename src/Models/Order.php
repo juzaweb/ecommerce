@@ -5,6 +5,7 @@ namespace Juzaweb\Modules\Ecommerce\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Juzaweb\Core\Models\Model;
 use Juzaweb\Core\Traits\HasAPI;
@@ -58,6 +59,18 @@ class Order extends Model implements Paymentable
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
+    }
+
+    public function products(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Product::class,
+            OrderItem::class,
+            'order_id', // Foreign key on OrderItem table...
+            'id', // Foreign key on Product table...
+            'id', // Local key on Order table...
+            'product_id' // Local key on OrderItem table...
+        );
     }
 
     public function paymentHistories(): MorphMany

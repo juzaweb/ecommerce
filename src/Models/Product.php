@@ -20,6 +20,9 @@ class Product extends Model implements TranslatableContract
     protected $fillable = [
         'inventory',
         'status',
+        'preview_url',
+        'video_url',
+        'main_locale',
     ];
 
     public $translatedAttributes = [
