@@ -1,0 +1,37 @@
+{
+    "name": "juzaweb/ecommerce",
+    "description": "Ecommerce Module",
+    "type": "juzaweb-module",
+    "homepage": "https://juzaweb.com/cms",
+    "keywords": [],
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Juzaweb CMS",
+            "email": "admin@juzaweb.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "juzaweb/core": "^5.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Juzaweb\\Modules\\Ecommerce\\": "src/",
+            "Juzaweb\\Modules\\Ecommerce\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Juzaweb\\Modules\\Ecommerce\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "sort-packages": true
+    }
+}
