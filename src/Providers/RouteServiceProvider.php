@@ -1,10 +1,10 @@
 <?php
 
-namespace Juzaweb\Modules\Ecommerce\Providers;
+namespace Juzaweb\Modules\Membership\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Juzaweb\Core\Facades\Locale;
+use Illuminate\Support\Facades\Route;
+use Juzaweb\Modules\Core\Facades\Locale;
 
 class RouteServiceProvider extends ServiceProvider
 {

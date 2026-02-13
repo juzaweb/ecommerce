@@ -1,11 +1,11 @@
 {
-    "name": "Ecommerce",
-    "alias": "ecommerce",
+    "name": "Membership",
+    "alias": "membership",
     "description": "",
     "keywords": [],
     "priority": 0,
     "providers": [
-        "Juzaweb\\Modules\\Ecommerce\\Providers\\ECommerceServiceProvider"
+        "Juzaweb\\Modules\\Membership\\Providers\\MembershipServiceProvider"
     ],
     "files": []
 }
